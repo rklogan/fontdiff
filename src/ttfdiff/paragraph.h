@@ -11,6 +11,7 @@
 namespace ttfdiff {
 
 class Language;
+class ShapedText;
 class Style;
 
 class Paragraph {
@@ -31,6 +32,7 @@ class Paragraph {
 
   icu::UnicodeString text_;
   std::vector<Span> spans_;
+  std::vector<ShapedText*> shapedRuns_;
 };
 
 }  // namespace ttfdiff

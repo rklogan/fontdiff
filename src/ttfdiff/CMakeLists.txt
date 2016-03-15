@@ -19,6 +19,7 @@ add_executable(ttfdiff
   language.cc
   main.cc
   paragraph.cc
+  shaped_text.cc
   style.cc
   style_key.cc)
 

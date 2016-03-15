@@ -12,6 +12,7 @@ class Style {
   Style(const Style* parent, const Language* language,
 	const std::string& spec);
   ~Style();
+  const Language* GetLanguage() const { return language_; }
   double GetTextSize() const { return textSize_; }
 
  private:

@@ -4,6 +4,7 @@
 
 #include "ttfdiff/icu_helper.h"
 #include "ttfdiff/paragraph.h"
+#include "ttfdiff/shaped_text.h"
 #include "ttfdiff/style.h"
 
 namespace ttfdiff {
@@ -12,6 +13,9 @@ Paragraph::Paragraph() {
 }
   
 Paragraph::~Paragraph() {
+  for (auto s : shapedRuns_) {
+    delete s;
+  }
 }
 
 void Paragraph::AppendSpan(const icu::StringPiece& text,
@@ -64,6 +68,10 @@ void Paragraph::ShapeBidiRun(
     text_.tempSubStringBetween(spanStart, spanLimit).toUTF8String(s);
     printf("  ShapeBidiSpan %d..%d bidiLevel: %d text: \"%s\"\n",
            spanStart, spanLimit, bidiLevel, s.c_str());
+    // TODO: Port font fallback handling over from experimental version.
+    shapedRuns_.push_back(
+        new ShapedText(text_.getBuffer(), spanStart, spanLimit, bidiLevel,
+		       /* font */ NULL, span.style));
     spanStart = spans_[spanIndex].limit;
     ++spanIndex;
   }
@@ -79,7 +87,6 @@ size_t Paragraph::FindSpan(int32_t pos) const {
       lo = mid + 1;
     }
   }
-  //return lo < spans_.size() ? &spans_[lo] : NULL;
   return lo;
 }
 

@@ -4,7 +4,6 @@
 #include <hb.h>
 #include <unicode/brkiter.h>
 #include <unicode/locid.h>
-//#include <unicode/utypes.h>
 
 namespace ttfdiff {
 
