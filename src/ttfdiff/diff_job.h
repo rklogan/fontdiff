@@ -25,14 +25,11 @@ class DiffJob {
  public:
   static const FT_F26Dot6 pageWidth, pageHeight, marginWidth;
 
-  DiffJob(const std::vector<std::string>& beforeFonts,
-	  const std::vector<std::string>& afterFonts,
+  DiffJob(const FontCollection* beforeFonts,
+	  const FontCollection* afterFonts,
 	  const std::string& outputPath);
   ~DiffJob();
   void Render(const std::string& specimenPath);
-
-  const Font* FindFont(UChar32 codepoint, const Style* style, bool isBefore,
-		       const Font* lastFont) const;
 
  private:
   const Language* GetLanguage(const std::string& bcp47);
@@ -51,8 +48,8 @@ class DiffJob {
   void HandleEndElement();
   void HandleCharData(const StringPiece& text);
 
-  FontLoader fontLoader_;
-  StyleFontMap beforeFonts_, afterFonts_;
+  const FontCollection* beforeFonts_;
+  const FontCollection* afterFonts_;
   cairo_surface_t* pdf_surface_;
   cairo_t* pdf_;
   std::vector<DiffPage*> pages_;  // owner

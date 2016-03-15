@@ -9,9 +9,12 @@
 
 namespace ttfdiff {
 
-Paragraph::Paragraph() {
+Paragraph::Paragraph(const FontCollection* beforeFonts,
+		     const FontCollection* afterFonts)
+  : beforeFonts_(beforeFonts),
+    afterFonts_(afterFonts) {
 }
-  
+
 Paragraph::~Paragraph() {
   for (auto s : shapedRuns_) {
     delete s;

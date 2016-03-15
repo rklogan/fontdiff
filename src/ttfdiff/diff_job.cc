@@ -33,8 +33,8 @@ class ExpatCallbacks {
   static void HandleCharData(void* userData, const XML_Char *s, int len);
 };
 
-DiffJob::DiffJob(const std::vector<std::string>& beforeFonts,
-		 const std::vector<std::string>& afterFonts,
+DiffJob::DiffJob(const FontCollection* beforeFonts,
+		 const FontCollection* afterFonts,
 		 const std::string& outputPath)
   : pdf_surface_(
         cairo_pdf_surface_create(outputPath.c_str(),
@@ -49,27 +49,6 @@ DiffJob::~DiffJob() {
   for (auto lang : languages_) delete lang.second;
   for (auto p : paragraphs_) delete p;
 }
-
-
-const Font* DiffJob::FindFont(
-    UChar32 codepoint, const Style* style, bool isBefore,
-    const Font* lastFont) const {
-  if (lastFont && lastFont->IsCovering(codepoint)) {
-    return lastFont;
-  }
-
-  const StyleFontMap& fonts = isBefore ? beforeFonts_ : afterFonts_;
-  for (auto p : fonts) {
-    const Font* font = p.second;
-    if (font->IsCovering(codepoint)) {
-      return font;
-    }
-    printf("FindFont: Considering %s\n", font->GetPostScriptName().c_str());
-  }
-
-  return NULL;
-}
-
 
 void DiffJob::HandleStartElement(
     const std::string& name,
@@ -95,7 +74,7 @@ void DiffJob::HandleStartElement(
     element.style = cur.style;
   }
   if (name == "div" || name == "p" || name == "h1") {
-    paragraphs_.push_back(new Paragraph());
+    paragraphs_.push_back(new Paragraph(beforeFonts_, afterFonts_));
   }
   element.paragraph = paragraphs_.back();
   xmlElements_.push_back(element);
@@ -118,7 +97,7 @@ void DiffJob::Render(const std::string& specimenPath) {
   rootElement.language = GetLanguage("und");
   styles_.push_back(new Style(NULL, rootElement.language, ""));
   rootElement.style = styles_.back();
-  paragraphs_.push_back(new Paragraph());
+  paragraphs_.push_back(new Paragraph(beforeFonts_, afterFonts_));
   rootElement.paragraph = paragraphs_.back();
   xmlElements_.push_back(rootElement);
 

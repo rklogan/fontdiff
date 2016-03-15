@@ -10,13 +10,15 @@
 
 namespace ttfdiff {
 
+class FontCollection;
 class Language;
 class ShapedText;
 class Style;
 
 class Paragraph {
  public:
-  Paragraph();
+  Paragraph(const FontCollection* beforeFonts,
+	    const FontCollection* afterFonts);
   ~Paragraph();
   void AppendSpan(const icu::StringPiece& text, const Style* style);
   void Layout();
@@ -30,6 +32,8 @@ class Paragraph {
   void ShapeBidiRun(int32_t start, int32_t limit, UBiDiLevel bidiLevel);
   size_t FindSpan(int32_t start) const;
 
+  const FontCollection* beforeFonts_;
+  const FontCollection* afterFonts_;
   icu::UnicodeString text_;
   std::vector<Span> spans_;
   std::vector<ShapedText*> shapedRuns_;

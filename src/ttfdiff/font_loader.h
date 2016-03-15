@@ -7,12 +7,14 @@
 namespace ttfdiff {
 
 class Font;
+class FontCollection;
 
 class FontLoader {
  public:
   FontLoader();
   ~FontLoader();
   Font* Load(const std::string& path);
+  FontCollection* LoadCollection(const std::vector<std::string>& paths);
 
  private:
   static std::string GetSHA1(const std::string& filepath);

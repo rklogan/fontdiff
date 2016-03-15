@@ -14,6 +14,7 @@ add_executable(ttfdiff
   argument_parser.cc
   diff_job.cc
   font.cc
+  font_collection.cc
   font_loader.cc
   icu_helper.cc
   language.cc

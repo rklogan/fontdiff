@@ -1,5 +1,6 @@
 #include "openssl/sha.h"
 #include "ttfdiff/font.h"
+#include "ttfdiff/font_collection.h"
 #include "ttfdiff/font_loader.h"
 
 namespace ttfdiff {
@@ -17,6 +18,15 @@ Font* FontLoader::Load(const std::string& path) {
     font = fonts_[key] = Font::Load(path);
   }
   return font;
+}
+
+FontCollection* FontLoader::LoadCollection(
+    const std::vector<std::string>& paths) {
+  std::vector<const Font*> fonts;
+  for (const std::string& path : paths) {
+    fonts.push_back(Load(path));
+  }
+  return new FontCollection(fonts);
 }
 
 std::string FontLoader::GetSHA1(const std::string& path) {
