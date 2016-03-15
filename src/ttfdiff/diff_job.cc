@@ -36,7 +36,8 @@ class ExpatCallbacks {
 DiffJob::DiffJob(const FontCollection* beforeFonts,
 		 const FontCollection* afterFonts,
 		 const std::string& outputPath)
-  : pdf_surface_(
+  : beforeFonts_(beforeFonts), afterFonts_(afterFonts),
+    pdf_surface_(
         cairo_pdf_surface_create(outputPath.c_str(),
 				 pageWidth / 64.0, pageHeight / 64.0)),
     pdf_(cairo_create(pdf_surface_)) {

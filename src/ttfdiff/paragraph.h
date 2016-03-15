@@ -31,12 +31,16 @@ class Paragraph {
 
   void ShapeBidiRun(int32_t start, int32_t limit, UBiDiLevel bidiLevel);
   size_t FindSpan(int32_t start) const;
+  void ShapeSpan(int32_t start, int32_t limit,
+                 UBiDiLevel bidiLevel,
+		 const FontCollection* fonts, const Style* style,
+		 std::vector<ShapedText*>* runs);
 
   const FontCollection* beforeFonts_;
   const FontCollection* afterFonts_;
   icu::UnicodeString text_;
   std::vector<Span> spans_;
-  std::vector<ShapedText*> shapedRuns_;
+  std::vector<ShapedText*> beforeRuns_, afterRuns_;
 };
 
 }  // namespace ttfdiff

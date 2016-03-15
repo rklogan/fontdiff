@@ -2,6 +2,7 @@
 #include <unicode/ubidi.h>
 #include <unicode/unistr.h>
 
+#include "ttfdiff/font_collection.h"
 #include "ttfdiff/icu_helper.h"
 #include "ttfdiff/paragraph.h"
 #include "ttfdiff/shaped_text.h"
@@ -16,7 +17,10 @@ Paragraph::Paragraph(const FontCollection* beforeFonts,
 }
 
 Paragraph::~Paragraph() {
-  for (auto s : shapedRuns_) {
+  for (auto s : beforeRuns_) {
+    delete s;
+  }
+  for (auto s : afterRuns_) {
     delete s;
   }
 }
@@ -67,16 +71,46 @@ void Paragraph::ShapeBidiRun(
   while (spanIndex < spanIndexLimit) {
     const Span& span = spans_[spanIndex];
     const int32_t spanLimit = std::min(limit, span.limit);
-    std::string s;
-    text_.tempSubStringBetween(spanStart, spanLimit).toUTF8String(s);
-    printf("  ShapeBidiSpan %d..%d bidiLevel: %d text: \"%s\"\n",
-           spanStart, spanLimit, bidiLevel, s.c_str());
-    // TODO: Port font fallback handling over from experimental version.
-    shapedRuns_.push_back(
-        new ShapedText(text_.getBuffer(), spanStart, spanLimit, bidiLevel,
-		       /* font */ NULL, span.style));
+    ShapeSpan(spanStart, spanLimit, bidiLevel,
+	      beforeFonts_, span.style, &beforeRuns_);
+    ShapeSpan(spanStart, spanLimit, bidiLevel,
+	      afterFonts_, span.style, &afterRuns_);
     spanStart = spans_[spanIndex].limit;
     ++spanIndex;
+  }
+}
+
+void Paragraph::ShapeSpan(int32_t start, int32_t limit,
+			  UBiDiLevel bidiLevel,
+			  const FontCollection* fonts, const Style* style,
+			  std::vector<ShapedText*>* result) {
+  if (start >= limit || !fonts || !style || !result) {
+    return;
+  }
+
+  int32_t pos = start, last = start;
+  const Font* lastFont = NULL;
+  while (pos < limit) {
+    const UChar32 curChar = text_.char32At(pos);
+    const Font* curFont = fonts->FindFont(curChar, style, lastFont);
+    if (curFont != lastFont) {
+      if (lastFont && curFont && last < pos) {
+	result->push_back(
+	    new ShapedText(text_.getBuffer(), last, pos,
+			   bidiLevel, curFont, style));
+      }
+      lastFont = curFont;
+      last = pos;
+    }
+    ++pos;
+    if (curChar > 0xFFFF) {
+      ++pos;
+    }
+  }
+  if (lastFont && last < limit) {
+    result->push_back(
+        new ShapedText(text_.getBuffer(), last, limit,
+		       bidiLevel, lastFont, style));
   }
 }
 

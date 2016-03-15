@@ -4,10 +4,10 @@
 
 namespace ttfdiff {
 
-FontCollection::FontCollection(const std::vector<const Font*>& fonts)
+FontCollection::FontCollection(std::vector<const Font*> fonts)
   : fonts_(fonts) {
 }
-  
+
 FontCollection::~FontCollection() {
 }
   
@@ -21,7 +21,7 @@ const Font* FontCollection::FindFont(UChar32 codepoint, const Style* style,
     if (font->IsCovering(codepoint)) {
       return font;
     }
-    printf("FindFont: Considering %s\n", font->GetPostScriptName().c_str());
+    //printf("FindFont: Considering %s\n", font->GetPostScriptName().c_str());
   }
 
   return NULL;
