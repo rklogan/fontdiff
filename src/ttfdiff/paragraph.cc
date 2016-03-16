@@ -4,6 +4,7 @@
 
 #include "ttfdiff/font_collection.h"
 #include "ttfdiff/icu_helper.h"
+#include "ttfdiff/language.h"
 #include "ttfdiff/paragraph.h"
 #include "ttfdiff/shaped_text.h"
 #include "ttfdiff/style.h"
@@ -52,6 +53,19 @@ void Paragraph::Layout() {
     }
     ShapeBidiRun(start, limit, bidiLevel);
     start = limit;
+  }
+
+  std::vector<int32_t> potentialLineBreaks;
+  FindPotentialLineBreaks(&potentialLineBreaks);
+  start = 0;
+  for (int32_t b : potentialLineBreaks) {
+    printf("MaybeBreak %d..%d\n", start, b);
+    start = b;
+  }
+
+  if (!beforeRuns_.empty() && !afterRuns_.empty()) {
+    printf("Runs before: %d after: %d\n",
+	   beforeRuns_.size(), afterRuns_.size());
   }
   ubidi_close(lineBidi);
   ubidi_close(paraBidi);  
@@ -125,6 +139,41 @@ size_t Paragraph::FindSpan(int32_t pos) const {
     }
   }
   return lo;
+}
+
+void Paragraph::FindPotentialLineBreaks(std::vector<int32_t>* breaks) {
+  const Language* curLang = NULL;
+  int32_t runStart = 0, curLangStart = 0;
+  const size_t riLimit = spans_.size();
+  for (size_t ri = 0; ri < riLimit; ++ri) {
+    const Span& span = spans_[ri];
+    const Language* spanLang = span.style->GetLanguage();
+    if (spanLang != curLang) {
+      FindPotentialLineBreaks(curLangStart, runStart, curLang, breaks);
+      curLang = spanLang;
+      curLangStart = runStart;
+    }
+    runStart = span.limit;
+  }
+  FindPotentialLineBreaks(curLangStart, text_.length(), curLang, breaks);
+}
+
+void Paragraph::FindPotentialLineBreaks(int32_t start, int32_t limit,
+					const Language* language,
+					std::vector<int32_t>* breaks) {
+  if (start >= limit || !language || !breaks) {
+    return;
+  }
+
+  icu::BreakIterator* breaker = language->GetLineBreaker();
+  if (breaker) {
+    breaker->setText(text_);
+    int32_t cur = breaker->following(start > 0 ? start - 1 : 0);
+    while (cur != BreakIterator::DONE && cur < limit) {
+      breaks->push_back(cur);
+      cur = breaker->next();
+    }
+  }
 }
 
 }  // namespace ttfdiff

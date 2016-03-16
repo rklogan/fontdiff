@@ -71,6 +71,9 @@ void DiffJob::HandleStartElement(
     styles_.push_back(
         new Style(cur.style, element.language, styleIter->second));
     element.style = styles_.back();
+  } else if (cur.style->GetLanguage() != element.language) {
+    styles_.push_back(new Style(cur.style, element.language, ""));
+    element.style = styles_.back();
   } else {
     element.style = cur.style;
   }
@@ -79,7 +82,6 @@ void DiffJob::HandleStartElement(
   }
   element.paragraph = paragraphs_.back();
   xmlElements_.push_back(element);
-  printf("StartElement %s\n", name.c_str());
 }
 
 void DiffJob::HandleEndElement() {

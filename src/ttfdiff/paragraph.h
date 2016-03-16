@@ -35,6 +35,10 @@ class Paragraph {
                  UBiDiLevel bidiLevel,
 		 const FontCollection* fonts, const Style* style,
 		 std::vector<ShapedText*>* runs);
+  void FindPotentialLineBreaks(std::vector<int32_t>* breaks);
+  void FindPotentialLineBreaks(int32_t start, int32_t limit,
+			       const Language* language,
+			       std::vector<int32_t>* breaks);
 
   const FontCollection* beforeFonts_;
   const FontCollection* afterFonts_;
