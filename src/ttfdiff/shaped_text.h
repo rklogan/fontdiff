@@ -20,11 +20,14 @@ class ShapedText {
   ShapedText(const UChar* text, int32_t start, int32_t limit,
              UBiDiLevel bidiLevel, const Font* font, const Style* style);
   ~ShapedText();
+  int32_t GetStart() const { return start_; }
+  int32_t GetLimit() const { return limit_; }
   FT_F26Dot6 GetAscender() const { return ascender_; }
   FT_F26Dot6 GetDescender() const { return descender_; }
   FT_F26Dot6 GetXAdvance(int32_t start, int32_t limit) const;
   void Render(int32_t start, int32_t limit,
 	      cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const;
+  bool IsCovering(int32_t start, int32_t limit) const;
 
  private:
   void Shape();

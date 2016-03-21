@@ -80,6 +80,10 @@ FT_F26Dot6 ShapedText::GetXAdvance(int32_t start, int32_t limit) const {
   return result;
 }
 
+bool ShapedText::IsCovering(int32_t start, int32_t limit) const {
+  return start < limit_ && limit >= start_;
+}
+
 int32_t ShapedText::AppendUTF8(const UChar* text,
                                int32_t start, int32_t limit,
                                std::string* out) {
@@ -166,6 +170,8 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
 			 &cairoGlyphs.front(), cairoGlyphs.size(),
 			 &cairoClusters.front(), cairoClusters.size(),
 			 cairoFlags);
+  printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" gc: %p\n",
+	 start, limit, x/64.0, y/64.0, utf8.c_str(), gc);
 }
 
 unsigned int ShapedText::FindGlyph(int32_t cluster, hb_glyph_info_t* glyphs,

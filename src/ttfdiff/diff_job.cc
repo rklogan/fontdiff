@@ -11,6 +11,7 @@
 #include "ttfdiff/diff_job.h"
 #include "ttfdiff/font.h"
 #include "ttfdiff/language.h"
+#include "ttfdiff/page.h"
 #include "ttfdiff/paragraph.h"
 #include "ttfdiff/style.h"
 
@@ -41,14 +42,16 @@ DiffJob::DiffJob(const FontCollection* beforeFonts,
         cairo_pdf_surface_create(outputPath.c_str(),
 				 pageWidth / 64.0, pageHeight / 64.0)),
     pdf_(cairo_create(pdf_surface_)) {
+  pages_.push_back(new Page());
 }
-  
+
 DiffJob::~DiffJob() {
   cairo_destroy(pdf_);
   cairo_surface_destroy(pdf_surface_);
   for (auto style : styles_) delete style;
   for (auto lang : languages_) delete lang.second;
   for (auto p : paragraphs_) delete p;
+  for (auto p : pages_) delete p;
 }
 
 void DiffJob::HandleStartElement(
@@ -78,7 +81,7 @@ void DiffJob::HandleStartElement(
     element.style = cur.style;
   }
   if (name == "div" || name == "p" || name == "h1") {
-    paragraphs_.push_back(new Paragraph(beforeFonts_, afterFonts_));
+    paragraphs_.push_back(new Paragraph(this, beforeFonts_, afterFonts_));
   }
   element.paragraph = paragraphs_.back();
   xmlElements_.push_back(element);
@@ -100,7 +103,7 @@ void DiffJob::Render(const std::string& specimenPath) {
   rootElement.language = GetLanguage("und");
   styles_.push_back(new Style(NULL, rootElement.language, ""));
   rootElement.style = styles_.back();
-  paragraphs_.push_back(new Paragraph(beforeFonts_, afterFonts_));
+  paragraphs_.push_back(new Paragraph(this, beforeFonts_, afterFonts_));
   rootElement.paragraph = paragraphs_.back();
   xmlElements_.push_back(rootElement);
 
@@ -130,7 +133,11 @@ void DiffJob::Render(const std::string& specimenPath) {
   free(block);
   fclose(file);
   for (auto p : paragraphs_) {
-    p->Layout();
+    p->Layout(pageWidth - 2 * marginWidth);
+  }
+  for (auto page : pages_) {
+    page->Render(pdf_);
+    cairo_show_page(pdf_);
   }
 }
 

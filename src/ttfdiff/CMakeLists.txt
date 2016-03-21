@@ -18,7 +18,9 @@ add_executable(ttfdiff
   font_loader.cc
   icu_helper.cc
   language.cc
+  line.cc
   main.cc
+  page.cc
   paragraph.cc
   shaped_text.cc
   style.cc

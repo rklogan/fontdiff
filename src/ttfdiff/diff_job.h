@@ -16,8 +16,8 @@ typedef struct _cairo_surface cairo_surface_t;
 
 namespace ttfdiff {
 
-class DiffPage;
 class Language;
+class Page;
 class Paragraph;
 class Style;
 
@@ -29,6 +29,8 @@ class DiffJob {
 	  const FontCollection* afterFonts,
 	  const std::string& outputPath);
   ~DiffJob();
+  Page* GetCurrentPage() { return pages_.back(); }
+  void AddPage();
   void Render(const std::string& specimenPath);
 
  private:
@@ -50,12 +52,12 @@ class DiffJob {
 
   const FontCollection* beforeFonts_;
   const FontCollection* afterFonts_;
-  cairo_surface_t* pdf_surface_;
-  cairo_t* pdf_;
-  std::vector<DiffPage*> pages_;  // owner
-  std::map<std::string, Language*> languages_;  // owner
-  std::vector<Style*> styles_;  // owner
-  std::vector<Paragraph*> paragraphs_;  // owner
+  cairo_surface_t* pdf_surface_;  // owned
+  cairo_t* pdf_;  // owned
+  std::map<std::string, Language*> languages_;  // owned
+  std::vector<Style*> styles_;  // owned
+  std::vector<Paragraph*> paragraphs_;  // owned
+  std::vector<Page*> pages_;  // owned
 
   friend class ExpatCallbacks;
 };
