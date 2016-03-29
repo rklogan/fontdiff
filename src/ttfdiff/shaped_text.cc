@@ -141,10 +141,10 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
 	 ++gi) {
       cairo_glyph_t cairoGlyph;
       cairoGlyph.index = glyphs[gi].codepoint;
-      cairoGlyph.x = x + pos[gi].x_offset / 64.0;
-      cairoGlyph.y = y + pos[gi].y_offset / 64.0;
-      x += pos[gi].x_advance / 64.0;
-      y += pos[gi].y_advance / 64.0;
+      cairoGlyph.x = (x + pos[gi].x_offset) / 64.0;
+      cairoGlyph.y = (y + pos[gi].y_offset) / 64.0;
+      x += pos[gi].x_advance;
+      y += pos[gi].y_advance;
       cairoGlyphs.push_back(cairoGlyph);
       if (glyphs[gi].cluster != curCluster) {
 	cairo_text_cluster_t cairoCluster;
@@ -170,8 +170,10 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
 			 &cairoGlyphs.front(), cairoGlyphs.size(),
 			 &cairoClusters.front(), cairoClusters.size(),
 			 cairoFlags);
-  printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" gc: %p\n",
-	 start, limit, x/64.0, y/64.0, utf8.c_str(), gc);
+  printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" gc: %p "
+	 "size: %g font: %s\n",
+	 start, limit, x/64.0, y/64.0, utf8.c_str(), gc, style_->GetTextSize(),
+	 font_->GetPostScriptName().c_str());
 }
 
 unsigned int ShapedText::FindGlyph(int32_t cluster, hb_glyph_info_t* glyphs,
