@@ -166,10 +166,10 @@ void Paragraph::ShapeSpan(int32_t start, int32_t limit,
     const UChar32 curChar = text_.char32At(pos);
     const Font* curFont = fonts->FindFont(curChar, style, lastFont);
     if (curFont != lastFont) {
-      if (lastFont && curFont && last < pos) {
+      if (lastFont && last < pos) {
 	result->push_back(
 	    new ShapedText(text_.getBuffer(), last, pos,
-			   bidiLevel, curFont, style));
+			   bidiLevel, lastFont, style));
       }
       lastFont = curFont;
       last = pos;

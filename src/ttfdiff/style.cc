@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include "ttfdiff/font.h"
 #include "ttfdiff/language.h"
 #include "ttfdiff/style.h"
 
@@ -19,7 +20,8 @@ std::vector<std::string> split(const std::string& text, char sep) {
 Style::Style(const Style* parent, const Language* language,
 	     const std::string& spec)
   : language_(language),
-    textSize_(parent ? parent->textSize_ : 12.0) {
+    textSize_(parent ? parent->textSize_ : 12.0),
+    weight_(parent ? parent->weight_ : 400) {
   // TODO: Properly parse spec string.
   double textSize = strtod(spec.c_str(), NULL);
   if (textSize > 0 && textSize < 1000) {
@@ -30,4 +32,14 @@ Style::Style(const Style* parent, const Language* language,
 Style::~Style() {
 }
 
+int32_t Style::GetFontScore(const Font& font) const {
+  // TODO: Implement properly, based on style specification.
+  int32_t delta = 0;
+  delta += std::abs(font.GetWeight() - weight_);
+  if (font.GetItalicAngle() != 0) {
+    delta += 50;
+  }
+  return delta;
+}
+  
 }  // namespace ttfdiff
