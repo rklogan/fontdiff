@@ -119,25 +119,33 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
   if (numGlyphs == 0 || !glyphs || !pos || !gc) {
     return;
   }
-  bool backward =
-    HB_DIRECTION_IS_BACKWARD(hb_buffer_get_direction(hb_buffer_));
-  unsigned int glyphStart =
-    FindGlyph(start - start_, glyphs, numGlyphs, backward);
-
+  const bool backward =
+      HB_DIRECTION_IS_BACKWARD(hb_buffer_get_direction(hb_buffer_));
+  const int glyphStart = FindGlyph(start - start_, glyphs, numGlyphs, backward);
+  const int glyphLimit = FindGlyph(limit - start_, glyphs, numGlyphs, backward);
   std::string utf8;
   std::vector<cairo_glyph_t> cairoGlyphs;
   std::vector<cairo_text_cluster_t> cairoClusters;
   cairo_text_cluster_flags_t cairoFlags =
-    static_cast<cairo_text_cluster_flags_t>(0);
+      static_cast<cairo_text_cluster_flags_t>(0);
   if (backward) {
+    int gi = glyphStart - 1;
+    for (int gi = glyphLimit; gi < glyphStart; ++gi) {
+      cairo_glyph_t cairoGlyph;
+      cairoGlyph.index = glyphs[gi].codepoint;
+      cairoGlyph.x = (x + pos[gi].x_offset) / 64.0;
+      cairoGlyph.y = (y + pos[gi].y_offset) / 64.0;
+      x += pos[gi].x_advance;
+      y += pos[gi].y_advance;
+      cairoGlyphs.push_back(cairoGlyph);
+    }
     cairoFlags = CAIRO_TEXT_CLUSTER_FLAG_BACKWARD;
-    return;  // TODO: Implement.
   } else {
     unsigned int curClusterStart = glyphStart;
     unsigned int curCluster = glyphs[curClusterStart].cluster;
     unsigned int gi = glyphStart;
     for (; (gi < numGlyphs) &&
-	   (static_cast<int32_t>(glyphs[gi].cluster) < limit - start_);
+           (static_cast<int32_t>(glyphs[gi].cluster) < limit - start_);
 	 ++gi) {
       cairo_glyph_t cairoGlyph;
       cairoGlyph.index = glyphs[gi].codepoint;
@@ -154,22 +162,26 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
 	cairoCluster.num_glyphs = gi - curClusterStart;
         cairoClusters.push_back(cairoCluster);
         curCluster = glyphs[gi].cluster;
-	curClusterStart = gi;
+        curClusterStart = gi;
       }
     }
     cairo_text_cluster_t finalCluster;
     finalCluster.num_bytes =
-      AppendUTF8(text_, curCluster + start_, limit, &utf8);
+        AppendUTF8(text_, curCluster + start_, limit, &utf8);
     finalCluster.num_glyphs = gi - curClusterStart;
     cairoClusters.push_back(finalCluster);
   }
 
   cairo_set_font_face(gc, font_->GetCairoFace());
   cairo_set_font_size(gc, style_->GetTextSize());
-  cairo_show_text_glyphs(gc, utf8.c_str(), utf8.size(),
-			 &cairoGlyphs.front(), cairoGlyphs.size(),
-			 &cairoClusters.front(), cairoClusters.size(),
-			 cairoFlags);
+  if (cairoClusters.size() > 0) {
+    cairo_show_text_glyphs(gc, utf8.c_str(), utf8.size(),
+			   &cairoGlyphs.front(), cairoGlyphs.size(),
+			   &cairoClusters.front(), cairoClusters.size(),
+			   cairoFlags);
+  } else {
+    cairo_show_glyphs(gc, &cairoGlyphs.front(), cairoGlyphs.size());
+  }
   if (false) {
     printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" "
 	   "size: %g font: %s\n",
