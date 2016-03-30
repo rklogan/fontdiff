@@ -20,6 +20,7 @@ add_executable(ttfdiff
   icu_helper.cc
   language.cc
   line.cc
+  line_differ.cc
   main.cc
   page.cc
   paragraph.cc
