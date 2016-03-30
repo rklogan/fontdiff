@@ -45,7 +45,7 @@ void ShapedText::Shape() {
     return;
   }
   FT_Face face = font_->GetFreetypeFace();
-  FT_F26Dot6 textSize = static_cast<FT_F26Dot6>(style_->GetTextSize() * 64);
+  FT_F26Dot6 textSize = static_cast<FT_F26Dot6>(style_->GetFontSize() * 64);
   FT_Set_Char_Size(face, textSize, textSize, 72, 72);
   // TODO: Take ascender and descender from the OpenType BASE table if present.
   ascender_ = face->size->metrics.ascender;
@@ -173,7 +173,7 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
   }
 
   cairo_set_font_face(gc, font_->GetCairoFace());
-  cairo_set_font_size(gc, style_->GetTextSize());
+  cairo_set_font_size(gc, style_->GetFontSize());
   if (cairoClusters.size() > 0) {
     cairo_show_text_glyphs(gc, utf8.c_str(), utf8.size(),
 			   &cairoGlyphs.front(), cairoGlyphs.size(),
@@ -185,7 +185,7 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
   if (false) {
     printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" "
 	   "size: %g font: %s\n",
-	   start, limit, x/64.0, y/64.0, utf8.c_str(), style_->GetTextSize(),
+	   start, limit, x/64.0, y/64.0, utf8.c_str(), style_->GetFontSize(),
 	   font_->GetPostScriptName().c_str());
   }
 }

@@ -14,7 +14,8 @@ class Style {
         const std::string& spec);
   ~Style();
   const Language* GetLanguage() const { return language_; }
-  double GetTextSize() const { return fontSize_; }
+  double GetFontSize() const { return fontSize_; }
+  double GetFontWeight() const { return fontWeight_; }
   int32_t GetFontScore(const Font& font) const;
 
  private:
