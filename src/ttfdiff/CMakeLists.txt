@@ -12,6 +12,7 @@ pkg_search_module(OPENSSL REQUIRED openssl)
 
 add_executable(ttfdiff
   argument_parser.cc
+  cairo_helper.cc
   diff_job.cc
   font.cc
   font_collection.cc

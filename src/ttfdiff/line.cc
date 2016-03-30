@@ -1,11 +1,16 @@
 #include <vector>
+
+#include <cairo/cairo.h>
+
+#include "ttfdiff/cairo_helper.h"
 #include "ttfdiff/line.h"
 #include "ttfdiff/shaped_text.h"
 
 namespace ttfdiff {
 
-Line::Line()
-  : xAdvance_(0), ascender_(0), descender_(0) {
+Line::Line(FT_F26Dot6 width)
+  : width_(width), xAdvance_(0), ascender_(0), descender_(0),
+    backgroundColor_(0xffffff) {
 }
 
 Line::~Line() {
@@ -28,6 +33,17 @@ void Line::Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
   for (const Run& run : runs_) {
     run.text->Render(run.start, run.limit, gc, x + run.x, y);
   }
+}
+
+void Line::RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
+  if (backgroundColor_ == 0xffffff) {
+    return;
+  }
+  SetSourceColor(gc, backgroundColor_);
+  cairo_rectangle(gc, x / 64.0 - 1.0, (y - ascender_) / 64.0,
+		  width_/64.0 + 2.0, (ascender_ - descender_) / 64.0);
+  cairo_fill(gc);
+  SetSourceColor(gc, 0);
 }
 
 }  // namespace ttfdiff

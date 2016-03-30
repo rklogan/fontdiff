@@ -28,9 +28,10 @@ void Page::AddLine(Line* line, FT_F26Dot6 x, FT_F26Dot6 y) {
 
 void Page::Render(cairo_t* gc) const {
   for (const PositionedLine& pline : lines_) {
-    if (pline.line != NULL) {
-      pline.line->Render(gc, pline.x, pline.y);
-    }
+    pline.line->RenderHighlights(gc, pline.x, pline.y);
+  }
+  for (const PositionedLine& pline : lines_) {
+    pline.line->Render(gc, pline.x, pline.y);
   }
 }
   

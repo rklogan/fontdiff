@@ -95,8 +95,8 @@ void Paragraph::Layout(FT_F26Dot6 width) {
       break;
     }
 
-    std::unique_ptr<Line> beforeLine(new Line());
-    std::unique_ptr<Line> afterLine(new Line());
+    std::unique_ptr<Line> beforeLine(new Line(width));
+    std::unique_ptr<Line> afterLine(new Line(width));
     ubidi_setLine(paraBidi, start, pos, lineBidi, &err);
     CheckUErrorCode(err);
     const int32_t numRuns = ubidi_countRuns(lineBidi, &err);
@@ -115,7 +115,9 @@ void Paragraph::Layout(FT_F26Dot6 width) {
     }
     if (numRuns > 0) {
       Page* page = job_->GetCurrentPage();
-      page->AddLine(beforeLine.release(), DiffJob::marginWidth, page->GetY());
+      if (FindDeltas(beforeLine.get(), afterLine.get())) {
+	page->AddLine(beforeLine.release(), DiffJob::marginWidth, page->GetY());
+      }
       page->AddLine(afterLine.release(), DiffJob::marginWidth, page->GetY());
     }
     start = pos;
@@ -275,6 +277,12 @@ void Paragraph::AddRunsToLine(bool before, int32_t start, int32_t limit,
       line->AddShapedText(run, start, limit);
     }
   }
+}
+
+bool Paragraph::FindDeltas(Line* before, Line* after) {
+  before->SetBackgroundColor(0xffecec);
+  after->SetBackgroundColor(0xeaffea);
+  return true;
 }
 
 }  // namespace ttfdiff

@@ -53,6 +53,7 @@ class Paragraph {
 		   FT_F26Dot6* ascender, FT_F26Dot6* descender) const;
 
   void AddRunsToLine(bool before, int32_t start, int32_t limit, Line* line);
+  bool FindDeltas(Line* before, Line* after);
 
   DiffJob* job_;
   const FontCollection* beforeFonts_;
