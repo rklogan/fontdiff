@@ -96,43 +96,49 @@ void Paragraph::Layout(FT_F26Dot6 width) {
     if (pos >= text_.length()) {
       break;
     }
-
-    std::unique_ptr<Line> beforeLine(new Line(width));
-    std::unique_ptr<Line> afterLine(new Line(width));
-    ubidi_setLine(paraBidi, start, pos, lineBidi, &err);
-    CheckUErrorCode(err);
-    const int32_t numRuns = ubidi_countRuns(lineBidi, &err);
-    CheckUErrorCode(err);
-    printf("Line %d..%d numRuns: %d\n", start, pos, numRuns);
-    int32_t runStart = 0, runLength = 0;
-    for (int32_t i = 0; i < numRuns; ++i) {
-      const UBiDiDirection direction =
-	  ubidi_getVisualRun(lineBidi, i, &runStart, &runLength);
-      AddRunsToLine(/* before? */ true, 
-		    start + runStart, start + runStart + runLength,
-		    beforeLine.get());
-      AddRunsToLine(/* before? */ false, 
-		    start + runStart, start + runStart + runLength,
-		    afterLine.get());
-    }
-    if (numRuns > 0) {
-      Page* page = job_->GetCurrentPage();
-      if (FindDeltas(beforeLine.get(), afterLine.get())) {
-	page->AddLine(beforeLine.release(), DiffJob::marginWidth, page->GetY());
-      }
-      page->AddLine(afterLine.release(), DiffJob::marginWidth, page->GetY());
-    }
+    AddLine(paraBidi, lineBidi, width, start, pos);
     start = pos;
   }
+  AddLine(paraBidi, lineBidi, width, start, text_.length());
 
-  if (!beforeRuns_.empty() && !afterRuns_.empty()) {
-    printf("Runs before: %d after: %d\n",
-           beforeRuns_.size(), afterRuns_.size());
-  }
   ubidi_close(lineBidi);
   ubidi_close(paraBidi);
 }
 
+void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
+			int32_t start, int32_t limit) {
+  if (!paraBidi || !lineBidi || start >= limit) {
+    return;
+  }
+
+  UErrorCode err = U_ZERO_ERROR;
+  std::unique_ptr<Line> beforeLine(new Line(width));
+  std::unique_ptr<Line> afterLine(new Line(width));
+  ubidi_setLine(paraBidi, start, limit, lineBidi, &err);
+  CheckUErrorCode(err);
+  const int32_t numRuns = ubidi_countRuns(lineBidi, &err);
+  CheckUErrorCode(err);
+  // printf("Line %d..%d numRuns: %d\n", start, limit, numRuns);
+  int32_t runStart = 0, runLength = 0;
+  for (int32_t i = 0; i < numRuns; ++i) {
+    const UBiDiDirection direction =
+        ubidi_getVisualRun(lineBidi, i, &runStart, &runLength);
+    AddRunsToLine(/* before? */ true, 
+		  start + runStart, start + runStart + runLength,
+		  beforeLine.get());
+    AddRunsToLine(/* before? */ false, 
+		  start + runStart, start + runStart + runLength,
+		  afterLine.get());
+  }
+  if (numRuns > 0) {
+    Page* page = job_->GetCurrentPage();
+    if (FindDeltas(beforeLine.get(), afterLine.get())) {
+      page->AddLine(beforeLine.release(), DiffJob::marginWidth, page->GetY());
+    }
+    page->AddLine(afterLine.release(), DiffJob::marginWidth, page->GetY());
+  }
+}
+  
 void Paragraph::ShapeBidiRun(
       int32_t start, int32_t limit, UBiDiLevel bidiLevel) {
   limit = std::min(limit, text_.length());
