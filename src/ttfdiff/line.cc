@@ -21,7 +21,7 @@ void Line::AddShapedText(const ShapedText* text,
   runs_.push_back(run);
   xAdvance_ += text->GetXAdvance(start, limit);
   ascender_ = std::max(ascender_, text->GetAscender());
-  descender_ = std::max(descender_, text->GetDescender());
+  descender_ = std::min(descender_, text->GetDescender());
 }
 
 void Line::Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
