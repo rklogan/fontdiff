@@ -14,13 +14,17 @@ class Style {
         const std::string& spec);
   ~Style();
   const Language* GetLanguage() const { return language_; }
-  double GetTextSize() const { return textSize_; }
+  double GetTextSize() const { return fontSize_; }
   int32_t GetFontScore(const Font& font) const;
 
  private:
+  void SetProperty(const std::string& key, const std::string& value);
+  void SetFontSize(double size);
+  void SetFontWeight(double weight);
+
   const Language* language_;
-  double textSize_;
-  int32_t weight_;  // 100..900
+  double fontSize_;
+  double fontWeight_;  // 100..900
 };
   
 }  // namespace ttfdiff
