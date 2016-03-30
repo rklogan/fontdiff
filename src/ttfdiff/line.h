@@ -21,6 +21,7 @@ class Line {
   void AddShapedText(const ShapedText* text, int32_t start, int32_t limit);
   FT_F26Dot6 GetAscender() const { return ascender_; }
   FT_F26Dot6 GetDescender() const { return descender_; }
+  FT_F26Dot6 GetWidth() const { return width_; }
   void Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const;
   void RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const;
 

@@ -170,10 +170,12 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
 			 &cairoGlyphs.front(), cairoGlyphs.size(),
 			 &cairoClusters.front(), cairoClusters.size(),
 			 cairoFlags);
-  printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" gc: %p "
-	 "size: %g font: %s\n",
-	 start, limit, x/64.0, y/64.0, utf8.c_str(), gc, style_->GetTextSize(),
-	 font_->GetPostScriptName().c_str());
+  if (false) {
+    printf("ShapedText::Render %d..%d; x: %g, y: %g; utf8:\"%s\" "
+	   "size: %g font: %s\n",
+	   start, limit, x/64.0, y/64.0, utf8.c_str(), style_->GetTextSize(),
+	   font_->GetPostScriptName().c_str());
+  }
 }
 
 unsigned int ShapedText::FindGlyph(int32_t cluster, hb_glyph_info_t* glyphs,
