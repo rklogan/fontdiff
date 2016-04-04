@@ -1,3 +1,6 @@
 [submodule "gyp"]
 	path = src/third_party/gyp
 	url = https://chromium.googlesource.com/external/gyp
+[submodule "expat"]
+	path = src/third_party/expat/files
+	url = git://git.code.sf.net/p/expat/code_git
