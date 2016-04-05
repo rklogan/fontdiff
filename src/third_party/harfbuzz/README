@@ -1,0 +1,4 @@
+Version: 1.2.4
+License: MIT
+Local Modifications:
+* Added autoconf_generated/hb-version.h
