@@ -13,3 +13,6 @@
 [submodule "pixman"]
 	path = src/third_party/pixman/pixman
 	url = https://anongit.freedesktop.org/git/pixman.git
+[submodule "cairo"]
+	path = src/third_party/cairo/cairo
+	url = https://anongit.freedesktop.org/git/cairo
