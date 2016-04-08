@@ -1,4 +1,4 @@
-#include <cairo/cairo.h>
+#include "cairo.h"
 #include "ttfdiff/cairo_helper.h"
 
 namespace ttfdiff {

@@ -47,7 +47,9 @@ ArgumentParser::~ArgumentParser() {
 }
 
 void ArgumentParser::ExplainUsageAndExit(const char* programName) {
-  fprintf(stderr, "Usage: %s --before a.ttf --after b.ttf --out out.pdf\n",
+  fprintf(stderr,
+          "Usage: %s --before a.ttf --after b.ttf "
+          "--specimen specimen.html --out out.pdf\n",
           programName);
   exit(1);
 }

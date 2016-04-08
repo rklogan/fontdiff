@@ -2,9 +2,9 @@
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
 
-#include <cairo/cairo.h>
-#include <cairo/cairo-ft.h>
-#include <cairo/cairo-pdf.h>
+#include <cairo.h>
+#include <cairo-ft.h>
+#include <cairo-pdf.h>
 #include <expat.h>
 #include <unicode/stringpiece.h>
 

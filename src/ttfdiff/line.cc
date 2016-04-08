@@ -1,6 +1,6 @@
 #include <vector>
 
-#include <cairo/cairo.h>
+#include "cairo.h"
 
 #include "ttfdiff/cairo_helper.h"
 #include "ttfdiff/line.h"

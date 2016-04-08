@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-#include <cairo/cairo.h>
+#include <cairo.h>
 #include <hb.h>
 #include <hb-ft.h>
 #include <hb-icu.h>
