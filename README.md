@@ -1,14 +1,30 @@
 # ttfdiff
 
-Finds visual differences between two versions of a TrueType or OpenType font.
-Renders a specimen file to PDF, highlighting any lines where there is a delta.
+`ttfdiff` is a utility for testing fonts. Given a collection
+of TrueType or OpenType fonts before and after some change,
+ it typesets a PDF for human inspection.
 
-The specimen is HTML with embedded CSS styling:
+For every line in the specimen, the tool renders a high-resolution
+bitmap. If the font change makes any visible difference (even if it is
+just whitespace, for example when kerning tables are different),
+the output PDF will contain the old and new version next to each
+other.
+
+![Screenshot](doc/ttfdiff-1.png)
+
+
+## Specimen
+
+The specimen is HTML with embedded CSS styling, such as:
 ```html
-<html>
-   <p lang="de-CH" style="font-size:12pt">Hoi!</p>
+<html lang="la">
+   <p>Lorem <span style="font-weight:700">ipsum</span> dolor sit amet.</p>
 </html>
 ```
+
+Currently, only a _very_ small subset of HTML and CSS is supported:
+`lang`, `font-weight`, and `font-size`. If you need more, please feel free
+to extend the tool.
 
 
 ## Limitations
@@ -42,5 +58,5 @@ $ build/out/Default/ttfdiff \
     --out out.pdf
 ```
 
-This seems to work on MacOS X and at least some Linux distros.
-Feel free to improve; pull requests welcome.
+This seems to work on MacOS X. If you want to support other platforms,
+please feel free to make the change. Pull requests are very welcome.
