@@ -10,3 +10,6 @@
 [submodule "harfbuzz"]
 	path = src/third_party/harfbuzz/files
 	url = https://github.com/behdad/harfbuzz.git
+[submodule "pixman"]
+	path = src/third_party/pixman/pixman
+	url = https://anongit.freedesktop.org/git/pixman.git
