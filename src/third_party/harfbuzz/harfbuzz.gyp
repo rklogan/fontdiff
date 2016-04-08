@@ -5,8 +5,9 @@
             'type': 'static_library',
 	    'defines': [
 	        'HAVE_FREETYPE',
+                'HAVE_ICU',
+                'HAVE_ICU_BUILTIN',
 		'HAVE_OT',
-		'HB_NO_UNICODE_FUNCS',  # TODO: Remove after ICU is built
 	    ],
             'sources': [
                 'files/src/hb-blob.cc',
@@ -22,7 +23,7 @@
                 #'files/src/hb-glib.cc',
                 #'files/src/hb-gobject-structs.cc',
                 #'files/src/hb-graphite2.cc',
-                #'files/src/hb-icu.cc',
+                'files/src/hb-icu.cc',
                 'files/src/hb-ot-font.cc',
                 'files/src/hb-ot-layout.cc',
                 'files/src/hb-ot-map.cc',
@@ -56,6 +57,12 @@
 	        'files/src/hb-ot-shape-complex-myanmar-machine.rl',
 	        'files/src/hb-ot-shape-complex-use-machine.rl',
             ],
+            'direct_dependent_settings': {
+                'include_dirs': [
+                    'autoconf_generated',
+                    'files/src',
+                ],
+            },
             'include_dirs': [
                 'autoconf_generated',
 		'files/src',
@@ -77,6 +84,7 @@
       	    ],
 	    'dependencies': [
                 '../freetype/freetype.gyp:freetype',
+                '../icu/icu.gyp:icu_uc',
                 '../ragel/ragel.gyp:ragel',
 	    ],
         },
