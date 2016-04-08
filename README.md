@@ -39,7 +39,7 @@ you find it useful, too.  However, please understand the limitations:
   make the change yourself; pull requests are very welcome.
 
 * *Lousy codebase:* The current state of the codebase is pretty
-  embarrassing: Hardly any tests, massive dependencies, and so on.
+  embarrassing: No tests, massive dependencies, and so on.
   This is not a real product, it just helps to quickly compare
   two revisions of a TrueType or OpenType font.
 
