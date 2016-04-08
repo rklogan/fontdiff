@@ -44,7 +44,13 @@ Paragraph::~Paragraph() {
 
 void Paragraph::AppendSpan(const icu::StringPiece& text,
                            const Style* style) {
-  text_.append(icu::UnicodeString::fromUTF8(text));
+  std::string s(text.data(), text.length());
+  for (size_t i = 0; i < s.size(); ++i) {
+    if (s[i] == '\n' || s[i] == '\r') {
+      s[i] = ' ';
+    }
+  }
+  text_.append(icu::UnicodeString::fromUTF8(s));
   Paragraph::Span span;
   span.limit = text_.length();
   span.style = style;
@@ -116,9 +122,9 @@ void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
   std::unique_ptr<Line> afterLine(new Line(width));
   ubidi_setLine(paraBidi, start, limit, lineBidi, &err);
   CheckUErrorCode(err);
+
   const int32_t numRuns = ubidi_countRuns(lineBidi, &err);
   CheckUErrorCode(err);
-  // printf("Line %d..%d numRuns: %d\n", start, limit, numRuns);
   int32_t runStart = 0, runLength = 0;
   for (int32_t i = 0; i < numRuns; ++i) {
     const UBiDiDirection direction =
