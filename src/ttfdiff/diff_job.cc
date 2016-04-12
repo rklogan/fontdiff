@@ -54,6 +54,12 @@ DiffJob::~DiffJob() {
   for (auto p : pages_) delete p;
 }
 
+Page* DiffJob::AddPage() {
+  Page* page = new Page();
+  pages_.push_back(page);
+  return page;
+}
+
 void DiffJob::HandleStartElement(
     const std::string& name,
     const std::map<std::string, std::string>& attr) {

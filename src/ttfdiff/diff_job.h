@@ -30,7 +30,7 @@ class DiffJob {
 	  const std::string& outputPath);
   ~DiffJob();
   Page* GetCurrentPage() { return pages_.back(); }
-  void AddPage();
+  Page* AddPage();
   void Render(const std::string& specimenPath);
 
  private:

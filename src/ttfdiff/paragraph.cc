@@ -137,8 +137,16 @@ void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
 		  afterLine.get());
   }
   if (numRuns > 0) {
+    bool hasDeltas = FindDeltas(beforeLine.get(), afterLine.get());
+    FT_F26Dot6 height = beforeLine->GetAscender() - beforeLine->GetDescender();
+    if (hasDeltas) {
+      height += afterLine->GetAscender() - afterLine->GetDescender();
+    }
     Page* page = job_->GetCurrentPage();
-    if (FindDeltas(beforeLine.get(), afterLine.get())) {
+    if (page->GetY() + height >= DiffJob::pageHeight - DiffJob::marginWidth) {
+      page = job_->AddPage();
+    }
+    if (hasDeltas) {
       page->AddLine(beforeLine.release(), DiffJob::marginWidth, page->GetY());
     }
     page->AddLine(afterLine.release(), DiffJob::marginWidth, page->GetY());
