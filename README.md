@@ -64,14 +64,15 @@ pull requests are very welcome.
 
 ## Contributing
 
-If you are bored and want to get your hands dirty, here’s a few ideas:
+Here’s a few ideas what to do if you are bored and want to get your
+hands dirty:
 
-* *Port to other platforms.* This will be a very easy starter task
-  for people familiar with the respective platforms, and it should
-  not take more than a few hours since the project already uses
+* **Port to other platforms.** This will be a very easy starter task
+  for people familiar with the respective platforms. It should
+  not take more than a few hours, since the project already uses
   cross-platform libraries and a cross-platform build system.
 
-* *Highlight deltas within the line.* Currently, the tool just
+* **Highlight deltas within a line.** Currently, the tool just
   highlights lines where there is any difference between the old and
   the new version of a font. However, the output PDF does not show
   where exactly this delta is located. Highlighting the delta
@@ -82,40 +83,63 @@ If you are bored and want to get your hands dirty, here’s a few ideas:
   instead of characters.  There are a couple free libraries that
   implement diffing on arbitrary objects, for example
   [DTL](https://github.com/cubicdaiya/dtl/blob/master/test/Objdifftest.cpp).
-  This task probably takes a week to implement.
+  This task would probably take a week to implement.
 
-* *Tests.* Currently, the codebase is entirely untested which is clearly
-  not ideal.
+* **Testing.** Currently, the codebase is entirely untested, which makes
+  it hard to maintain the code.
 
-* *More constructs from CSS and HTML.* For developing high-quality fonts,
+* **More constructs from CSS and HTML.** For finding changes in
+  high-quality fonts,
   [font-feature-settings](https://www.w3.org/TR/css-fonts-3/#font-rend-desc)
   would be particularly useful.
 
-* *MathML.* With (even limited) support for MathML rendering,
+* **MathML.** With (even limited) support for MathML rendering,
   font designers could use ttfdiff to test their mathematical fonts.
 
-* *Sandboxing.* To protect users against attacks that use malicious
+* **Sandboxing.** To protect users against attacks that use malicious
   font or specimen files, set up a
   [sandbox](https://en.wikipedia.org/wiki/Sandbox_%28computer_security%29)
   early in the tool’s execution and then do all the rendering inside
   the sandbox.
 
-* *CSS box model.* It might be nice to properly support the layout of
+* **CSS box model.** It might be nice to properly support the layout of
   CSS and HTML, where boxes can be inside boxes. Not sure if this is
   terribly important for testing/diffing fonts, but if this tickles
   your interest, go ahead.
 
-* *Reduce the binary size.* To avoid dependency hell and have reproducible
-  versions, ttfdiff is statically linked to all its dependencies.
-  This is an intentional choice, but ICU’s data files are _huge_.
-  By building a static ICU data library that contains just break iterators,
-  the size of the compiled binary would get about 20MB smaller.
+* **Paragraph layout.** The current paragraph layout is rather
+  ad-hoc. On the positive side, ttfdiff uses
+  [ICU](http://site.icu-project.org/) for finding potential line
+  breaks, so ttfdiff can be used for developing fonts for Thai and
+  other languages that do not mark word boundaries. However, there is
+  currently no hyphenation or justification, and the current support
+  for bi-directional text is rather iffy. One option for doing this
+  properly could be [Raqm](https://github.com/HOST-Oman/libraqm);
+  another might be
+  [Minikin](https://android.googlesource.com/platform/frameworks/minikin/+/master). If
+  you want to look into this, make sure to think about the special
+  needs for diffing fonts. In particular, a changed glyph width should
+  not require a re-flow in the entire paragaph; otherwise, the
+  resulting diffs would become meaningless. When ttfdiff breaks
+  paragraphs into lines, it currently measures the width of text runs
+  using _both_ the old and the new font version. The decision about
+  line breaking is then made based on the maximum of both these
+  values, and therefore ttfdiff does not run into this reflowing
+  problem.  It will probably be quite difficult to replicate this
+  logic when using an existing paragraph layout library. However,
+  being able to precisely locate the difference between two fonts is
+  important for font designers, and this was the reason for writing
+  the tool in the first place.
 
-* *Improve paragraph layout.* The current paragraph layout is rather
-  ad-hoc. We alrady use [ICU](http://site.icu-project.org/) for
-  finding potential line break positions, which is rather non-trivial
-  in languages like Thai, Khmer, or Lao. However, there is no
-  hyphenation, and the current support for bi-directional text
-  is a little iffy.
+* **Reduce binary size.** To avoid dependency hell and have
+  reproducible versioning, ttfdiff is statically linked to all its
+  dependencies.  This is a very intentional choice, but ICU’s data
+  files are _huge_.  By building a static ICU data library with only
+  the needed data files (the break iterators), the size of the
+  compiled ttfdiff binary would shrink by about 20MB. If you are
+  interested in this task, check out how
+  [NodeJS](https://github.com/nodejs/node/blob/master/tools/icu/README.md)
+  does it. This task would not be very difficult, but it’s probably also
+  not the biggest problem to solve.
 
 Have fun!
