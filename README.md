@@ -1,8 +1,8 @@
 # ttfdiff
 
-`ttfdiff` is a utility for testing fonts. Given a collection
-of TrueType or OpenType fonts before and after some change,
-it typesets a PDF for human inspection.
+`ttfdiff` is a utility for testing fonts. Given a collection of
+TrueType or [OpenType](http://opentypecookbook.com/index.html) fonts
+before and after some change, it typesets a PDF for human inspection.
 
 For every line in the specimen text, the tool renders two raster
 images in high resolution. One image is typeset using the old font
@@ -12,6 +12,12 @@ for example when kerning has changed), the output PDF will highlight
 the difference in color.
 
 ![Screenshot](doc/ttfdiff-1.png)
+
+Since ttfdiff is using
+[HarfBuzz](https://www.freedesktop.org/wiki/Software/HarfBuzz/) for
+OpenType shaping, text gets rendered in a similar way to Firefox,
+Chrome, Android, LibreOffice, XeTeX, GNOME, KDE, ChromeOS, and other
+products.
 
 
 ## Specimen
@@ -23,24 +29,50 @@ The specimen format is HTML with embedded CSS styling:
 </html>
 ```
 
+The `lang` tag can make a difference for rendering. For example, when
+diffing a font with [Polish letter
+forms](https://glyphsapp.com/tutorials/localize-your-font-polish-kreska),
+you can write `<span lang="pl">ćńóśź</span> <span lang="und">ćńóśź</span>`
+to see ćńóśź both in their Polish and in their default variant. ttfdiff
+recognizes the same [language
+tags](https://www.w3.org/International/articles/language-tags/) as modern
+web browsers; “und” is the “undefined” language.
+
+
 ## Limitations
 
 This is not an official Google product. We just needed some small tool
 for testing our font production pipeline, and perhaps you will find it
 useful, too.  However, please understand the limitations:
 
-* *Not a full renderer:* HTML and CSS are much richer than what this
+* **Not a full renderer:** HTML and CSS are much richer than what this
   little testing tool supports. If you miss something, please do not
   hesitate to make the change yourself and send a pull request.
 
-* *Lousy codebase:* The current state of the codebase is pretty
+* **Lousy codebase:** The current state of the codebase is pretty
   embarrassing: No tests, too many dependencies, and so on. This is
   not a real product, and definitely not a showcase for writing
   production code.
 
-* *Not secure:* Do not run this tool on untrusted input. It parses
+* **Not secure:** Do not run this tool on untrusted input. It parses
   complicated input formats (TrueType, OpenType, HTML) but is not
   hardened in any way.  Use it at your own risk.
+
+* **Not a specimen generator:** This tool compares how an existing
+  specimen text gets rendered with two versions of the same
+  font. However, it will not automatically find text to be rendered.
+  Some font designers may want to manually craft specimens. Others,
+  say designers working on a Cherokee font, may want to render the
+  entire Cherokee Wikipedia with ttfdiff to find visual changes
+  between two font revisions. Yet others may want to write a Python
+  script that generates an HTML specimen with every kerning pair or
+  OpenType contextual substitution sequence for an existing
+  font. Those who make font editors, font compressors, or font
+  production pipelines may want to use ttfdiff for checking that a new
+  versions of their software makes no visual changes to the output of
+  their respective tools. Because these use cases are wildly
+  different, we felt it would be best to limit the scope of ttdfiff to
+  the actual diffing operation.
 
 
 ## Building
