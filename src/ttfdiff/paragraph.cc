@@ -140,6 +140,7 @@ void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
     bool hasDeltas = FindDeltas(beforeLine.get(), afterLine.get());
     FT_F26Dot6 height = beforeLine->GetAscender() - beforeLine->GetDescender();
     if (hasDeltas) {
+      job_->SetHasDiffs();
       height += afterLine->GetAscender() - afterLine->GetDescender();
     }
     Page* page = job_->GetCurrentPage();

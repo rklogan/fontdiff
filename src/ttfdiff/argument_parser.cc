@@ -51,7 +51,7 @@ void ArgumentParser::ExplainUsageAndExit(const char* programName) {
           "Usage: %s --before a.ttf --after b.ttf "
           "--specimen specimen.html --out out.pdf\n",
           programName);
-  exit(1);
+  exit(2);
 }
 
 }  // namespace ttfdiff

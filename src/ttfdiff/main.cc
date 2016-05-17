@@ -17,5 +17,5 @@ int main(int argc, const char** argv) {
       loader.LoadCollection(args.afterFonts()));
   ttfdiff::DiffJob job(beforeFonts.get(), afterFonts.get(), args.output());
   job.Render(args.specimen());
-  return 0;
+  return job.HasDiffs() ? 1 : 0;
 }

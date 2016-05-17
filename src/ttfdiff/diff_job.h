@@ -32,6 +32,8 @@ class DiffJob {
   Page* GetCurrentPage() { return pages_.back(); }
   Page* AddPage();
   void Render(const std::string& specimenPath);
+  bool HasDiffs() const { return has_diffs_; }
+  void SetHasDiffs() { has_diffs_ = true; }
 
  private:
   const Language* GetLanguage(const std::string& bcp47);
@@ -50,6 +52,7 @@ class DiffJob {
   void HandleEndElement();
   void HandleCharData(const StringPiece& text);
 
+  bool has_diffs_;
   const FontCollection* beforeFonts_;
   const FontCollection* afterFonts_;
   cairo_surface_t* pdf_surface_;  // owned

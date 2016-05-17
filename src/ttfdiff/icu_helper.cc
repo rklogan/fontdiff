@@ -8,7 +8,7 @@ void CheckUErrorCode(const UErrorCode& err) {
   if (U_FAILURE(err)) {
     fflush(stdout);
     fprintf(stderr, "ICU error: %s\n", u_errorName(err));
-    exit(1);
+    exit(2);
   }
 }
 

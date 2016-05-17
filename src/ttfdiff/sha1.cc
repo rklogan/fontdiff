@@ -206,7 +206,7 @@ std::string GetFileSHA1(const std::string& filepath) {
   FILE* file = fopen(filepath.c_str(), "rb");
   if (!file) {
     perror(filepath.c_str());
-    exit(1);
+    exit(2);
   }
 
   const size_t blockSize = 64 * 1024;
@@ -218,7 +218,7 @@ std::string GetFileSHA1(const std::string& filepath) {
     }
     if (ferror(file)) {
       perror(filepath.c_str());
-      exit(1);
+      exit(2);
     }
   }
   free(block);

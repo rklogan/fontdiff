@@ -37,7 +37,8 @@ class ExpatCallbacks {
 DiffJob::DiffJob(const FontCollection* beforeFonts,
 		 const FontCollection* afterFonts,
 		 const std::string& outputPath)
-  : beforeFonts_(beforeFonts), afterFonts_(afterFonts),
+  : has_diffs_(false),
+    beforeFonts_(beforeFonts), afterFonts_(afterFonts),
     pdf_surface_(
         cairo_pdf_surface_create(outputPath.c_str(),
 				 pageWidth / 64.0, pageHeight / 64.0)),
@@ -118,7 +119,7 @@ void DiffJob::Render(const std::string& specimenPath) {
   FILE* file = fopen(specimenPath.c_str(), "rb");
   if (!file) {
     perror(specimenPath.c_str());
-    exit(1);
+    exit(2);
   }
   const size_t blockSize = 64 * 1024;
   void* block = malloc(blockSize);
@@ -126,14 +127,14 @@ void DiffJob::Render(const std::string& specimenPath) {
     size_t n = fread(block, 1, blockSize, file);
     if (ferror(file)) {
       perror(specimenPath.c_str());
-      exit(1);
+      exit(2);
     }
     if (XML_Parse(parser, reinterpret_cast<const char*>(block), n, feof(file))
 	!= XML_STATUS_OK) {
       fflush(stdout);
       fprintf(stderr, "%s: %s\n", specimenPath.c_str(),
 	     XML_ErrorString(XML_GetErrorCode(parser)));
-      exit(1);
+      exit(2);
     }
   }
   free(block);
