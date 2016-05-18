@@ -1,10 +1,10 @@
-#ifndef TTFDIFF_SHA1_H_
-#define TTFDIFF_SHA1_H_
+#ifndef FONTDIFF_SHA1_H_
+#define FONTDIFF_SHA1_H_
 
 #include <string>
 
-namespace ttfdiff {
+namespace fontdiff {
 std::string GetFileSHA1(const std::string& filepath);
 }
 
-#endif  // TTFDIFF_SHA1_H_
+#endif  // FONTDIFF_SHA1_H_

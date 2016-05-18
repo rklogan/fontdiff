@@ -1,11 +1,11 @@
-#ifndef TTFDIFF_LANGUAGE_H_
-#define TTFDIFF_LANGUAGE_H_
+#ifndef FONTDIFF_LANGUAGE_H_
+#define FONTDIFF_LANGUAGE_H_
 
 #include <hb.h>
 #include <unicode/brkiter.h>
 #include <unicode/locid.h>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Language {
  public:
@@ -26,6 +26,6 @@ class Language {
   hb_script_t hb_script_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif // TTFDIFF_LANGUAGE_H_
+#endif // FONTDIFF_LANGUAGE_H_

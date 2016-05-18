@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_SHAPED_TEXT_H_
-#define TTFDIFF_SHAPED_TEXT_H_
+#ifndef FONTDIFF_SHAPED_TEXT_H_
+#define FONTDIFF_SHAPED_TEXT_H_
 
 #include <string>
 
@@ -10,7 +10,7 @@
 
 typedef struct _cairo cairo_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font;
 class Style;
@@ -46,6 +46,6 @@ class ShapedText {
   FT_F26Dot6 ascender_, descender_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_SHAPED_TEXT_H_
+#endif  // FONTDIFF_SHAPED_TEXT_H_

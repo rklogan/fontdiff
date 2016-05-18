@@ -1,10 +1,10 @@
-#ifndef TTFDIFF_FONT_LOADER_H_
-#define TTFDIFF_FONT_LOADER_H_
+#ifndef FONTDIFF_FONT_LOADER_H_
+#define FONTDIFF_FONT_LOADER_H_
 
 #include <map>
 #include <string>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font;
 class FontCollection;
@@ -21,6 +21,6 @@ class FontLoader {
   std::map<std::string, Font*> fonts_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_FONT_LOADER_H_
+#endif  // FONTDIFF_FONT_LOADER_H_

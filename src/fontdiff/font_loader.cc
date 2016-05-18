@@ -1,9 +1,9 @@
-#include "ttfdiff/font.h"
-#include "ttfdiff/font_collection.h"
-#include "ttfdiff/font_loader.h"
-#include "ttfdiff/sha1.h"
+#include "fontdiff/font.h"
+#include "fontdiff/font_collection.h"
+#include "fontdiff/font_loader.h"
+#include "fontdiff/sha1.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 FontLoader::FontLoader() {
 }
@@ -29,4 +29,4 @@ FontCollection* FontLoader::LoadCollection(
   return new FontCollection(fonts);
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

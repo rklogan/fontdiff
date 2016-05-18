@@ -1,11 +1,11 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include "ttfdiff/font.h"
-#include "ttfdiff/language.h"
-#include "ttfdiff/style.h"
+#include "fontdiff/font.h"
+#include "fontdiff/language.h"
+#include "fontdiff/style.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 static void SplitString(const std::string& text, char sep,
 			std::vector<std::string>* result) {
@@ -128,4 +128,4 @@ void Style::SetFontWeight(double weight) {
   }
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

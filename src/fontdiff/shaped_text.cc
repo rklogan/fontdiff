@@ -7,13 +7,13 @@
 #include <hb-icu.h>
 #include <unicode/unistr.h>
 
-#include "ttfdiff/font.h"
-#include "ttfdiff/icu_helper.h"
-#include "ttfdiff/language.h"
-#include "ttfdiff/shaped_text.h"
-#include "ttfdiff/style.h"
+#include "fontdiff/font.h"
+#include "fontdiff/icu_helper.h"
+#include "fontdiff/language.h"
+#include "fontdiff/shaped_text.h"
+#include "fontdiff/style.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 ShapedText::ShapedText(const UChar* text, int32_t start, int32_t limit,
                        UBiDiLevel bidiLevel,
@@ -215,4 +215,4 @@ unsigned int ShapedText::FindGlyph(int32_t cluster, hb_glyph_info_t* glyphs,
   return lo;
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

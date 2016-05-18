@@ -1,19 +1,19 @@
 {
     'targets': [
         {
-            'target_name': 'ttfdiff',
+            'target_name': 'fontdiff',
             'type': 'executable',
             'sources': [
                 'main.cc',
             ],
             'dependencies': [
-                'ttfdiff_lib',
+                'fontdiff_lib',
                 '../third_party/freetype/freetype.gyp:freetype',
                 '../third_party/icu/icu.gyp:icu_uc',
             ],
         },
         {
-            'target_name': 'ttfdiff_lib',
+            'target_name': 'fontdiff_lib',
             'type': 'static_library',
             'sources': [
                 'argument_parser.cc',

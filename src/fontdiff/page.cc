@@ -1,8 +1,8 @@
-#include "ttfdiff/diff_job.h"
-#include "ttfdiff/line.h"
-#include "ttfdiff/page.h"
+#include "fontdiff/diff_job.h"
+#include "fontdiff/line.h"
+#include "fontdiff/page.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 Page::Page()
   : yPos_(DiffJob::marginWidth) {
@@ -35,4 +35,4 @@ void Page::Render(cairo_t* gc) const {
   }
 }
   
-}  // namespace ttfdiff
+}  // namespace fontdiff

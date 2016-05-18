@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_FONT_H_
-#define TTFDIFF_FONT_H_
+#ifndef FONTDIFF_FONT_H_
+#define FONTDIFF_FONT_H_
 
 #include <string>
 
@@ -8,7 +8,7 @@
 
 typedef struct _cairo_font_face cairo_font_face_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font {
  public:
@@ -37,6 +37,6 @@ class Font {
   FT_Fixed italicAngle_;
 };
     
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_FONT_H_
+#endif  // FONTDIFF_FONT_H_

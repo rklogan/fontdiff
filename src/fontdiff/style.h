@@ -1,9 +1,9 @@
-#ifndef TTFDIFF_STYLE_H_
-#define TTFDIFF_STYLE_H_
+#ifndef FONTDIFF_STYLE_H_
+#define FONTDIFF_STYLE_H_
 
 #include <string>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font;
 class Language;
@@ -28,6 +28,6 @@ class Style {
   double fontWeight_;  // 100..900
 };
   
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
 #endif  // TFDIFF_STYLE_H_

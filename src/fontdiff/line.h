@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_LINE_H_
-#define TTFDIFF_LINE_H_
+#ifndef FONTDIFF_LINE_H_
+#define FONTDIFF_LINE_H_
 
 #include <stdint.h>
 #include <vector>
@@ -9,7 +9,7 @@
 
 typedef struct _cairo cairo_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class ShapedText;
 
@@ -37,6 +37,6 @@ class Line {
 };
 
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_LINE_H_
+#endif  // FONTDIFF_LINE_H_

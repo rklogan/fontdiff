@@ -1,10 +1,10 @@
-#ifndef TTFDIFF_ICU_HELPER_H_
-#define TTFDIFF_ICU_HELPER_H_
+#ifndef FONTDIFF_ICU_HELPER_H_
+#define FONTDIFF_ICU_HELPER_H_
 
 #include <unicode/errorcode.h>
 
-namespace ttfdiff {
+namespace fontdiff {
 void CheckUErrorCode(const UErrorCode& err);  
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif // TTFDIFF_ICU_HELPER_H_
+#endif // FONTDIFF_ICU_HELPER_H_

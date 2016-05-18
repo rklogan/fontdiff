@@ -2,11 +2,11 @@
 
 #include "cairo.h"
 
-#include "ttfdiff/cairo_helper.h"
-#include "ttfdiff/line.h"
-#include "ttfdiff/shaped_text.h"
+#include "fontdiff/cairo_helper.h"
+#include "fontdiff/line.h"
+#include "fontdiff/shaped_text.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 Line::Line(FT_F26Dot6 width)
   : width_(width), xAdvance_(0), ascender_(0), descender_(0),
@@ -46,4 +46,4 @@ void Line::RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
   SetSourceColor(gc, 0);
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

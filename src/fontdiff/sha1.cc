@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include "ttfdiff/sha1.h"
+#include "fontdiff/sha1.h"
 
 #ifdef __BIG_ENDIAN__
 # define SHA_BIG_ENDIAN
@@ -199,7 +199,7 @@ uint8_t* sha1_resultHmac(sha1nfo *s) {
   return sha1_result(s);
 }
 
-namespace ttfdiff {
+namespace fontdiff {
 std::string GetFileSHA1(const std::string& filepath) {
   sha1nfo sha;
   sha1_init(&sha);
@@ -232,4 +232,4 @@ std::string GetFileSHA1(const std::string& filepath) {
   }
   return result;
 }
-}  // namespace ttfdiff
+}  // namespace fontdiff

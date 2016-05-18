@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "ttfdiff/icu_helper.h"
+#include "fontdiff/icu_helper.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 void CheckUErrorCode(const UErrorCode& err) {
   if (U_FAILURE(err)) {
@@ -12,4 +12,4 @@ void CheckUErrorCode(const UErrorCode& err) {
   }
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

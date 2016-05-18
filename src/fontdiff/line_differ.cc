@@ -2,9 +2,9 @@
 #include <string>
 
 #include "cairo.h"
-#include "ttfdiff/line.h"
+#include "fontdiff/line.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 bool FindDeltas(Line* before, Line* after) {
   const int scale = 4;
@@ -51,4 +51,4 @@ bool FindDeltas(Line* before, Line* after) {
   }
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

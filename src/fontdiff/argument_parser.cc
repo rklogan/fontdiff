@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ttfdiff/argument_parser.h"
+#include "fontdiff/argument_parser.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 ArgumentParser::ArgumentParser(int argc, const char** argv) {
   enum CurOption { NONE, BEFORE, AFTER, SPECIMEN, OUT };
@@ -54,4 +54,4 @@ void ArgumentParser::ExplainUsageAndExit(const char* programName) {
   exit(2);
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

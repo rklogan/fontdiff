@@ -5,9 +5,9 @@
 #include "cairo.h"
 #include "cairo-ft.h"
 
-#include "ttfdiff/font.h"
+#include "fontdiff/font.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 static FT_Library freeTypeLibrary_;
 static bool freeTypeLibraryInited_ = false;
@@ -69,4 +69,4 @@ bool Font::IsCovering(uint32_t codepoint) const {
   return FT_Get_Char_Index(ft_face_, codepoint) != 0;
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

@@ -3,10 +3,10 @@
 #include <unicode/locid.h>
 #include <unicode/uscript.h>
 
-#include "ttfdiff/icu_helper.h"
-#include "ttfdiff/language.h"
+#include "fontdiff/icu_helper.h"
+#include "fontdiff/language.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 Language::Language(const std::string& bcp47)
   : bcp47_(bcp47),
@@ -44,4 +44,4 @@ Language::~Language() {
   delete wordBreaker_;
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

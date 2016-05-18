@@ -1,11 +1,11 @@
-#ifndef TTFDIFF_CAIRO_HELPER_H_
-#define TTFDIFF_CAIRO_HELPER_H_
+#ifndef FONTDIFF_CAIRO_HELPER_H_
+#define FONTDIFF_CAIRO_HELPER_H_
 
 #include <stdint.h>
 typedef struct _cairo cairo_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 void SetSourceColor(cairo_t* gc, uint32_t rgb);
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_CAIRO_HELPER_H_
+#endif  // FONTDIFF_CAIRO_HELPER_H_

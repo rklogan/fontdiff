@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_PARAGRAPH_H_
-#define TTFDIFF_PARAGRAPH_H_
+#ifndef FONTDIFF_PARAGRAPH_H_
+#define FONTDIFF_PARAGRAPH_H_
 
 #include <string>
 #include <vector>
@@ -11,7 +11,7 @@
 #include <unicode/ubidi.h>
 #include <unicode/unistr.h>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class DiffJob;
 class FontCollection;
@@ -65,6 +65,6 @@ class Paragraph {
   std::vector<Line*> beforeLines_, afterLines_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
 #endif  // TFDIFF_PARAGRAPH_H_

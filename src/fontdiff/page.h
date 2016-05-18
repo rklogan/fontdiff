@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_PAGE_H_
-#define TTFDIFF_PAGE_H_
+#ifndef FONTDIFF_PAGE_H_
+#define FONTDIFF_PAGE_H_
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 
 typedef struct _cairo cairo_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Line;
 
@@ -29,6 +29,6 @@ class Page {
   std::vector<PositionedLine> lines_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_PAGE_H_
+#endif  // FONTDIFF_PAGE_H_

@@ -1,8 +1,8 @@
-#include "ttfdiff/font.h"
-#include "ttfdiff/font_collection.h"
-#include "ttfdiff/style.h"
+#include "fontdiff/font.h"
+#include "fontdiff/font_collection.h"
+#include "fontdiff/style.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 FontCollection::FontCollection(std::vector<const Font*> fonts)
   : fonts_(fonts) {
@@ -37,5 +37,5 @@ const Font* FontCollection::FindFont(UChar32 codepoint, const Style* style,
   return bestFont;
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 

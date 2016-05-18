@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_STYLE_KEY_H_
-#define TTFDIFF_STYLE_KEY_H_
+#ifndef FONTDIFF_STYLE_KEY_H_
+#define FONTDIFF_STYLE_KEY_H_
 
 #include <ft2build.h>
 #include FT_GLYPH_H
@@ -7,7 +7,7 @@
 #include <map>
 #include <string>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font;
 
@@ -29,6 +29,6 @@ struct StyleKeyLess {
 
 typedef std::multimap<StyleKey, Font*, StyleKeyLess> StyleFontMap;
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_STYLE_KEY_H_
+#endif  // FONTDIFF_STYLE_KEY_H_

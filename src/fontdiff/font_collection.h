@@ -1,10 +1,10 @@
-#ifndef TTFDIFF_FONT_COLLECTION_H_
-#define TTFDIFF_FONT_COLLECTION_H_
+#ifndef FONTDIFF_FONT_COLLECTION_H_
+#define FONTDIFF_FONT_COLLECTION_H_
 
 #include <vector>
 #include <unicode/utypes.h>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Font;
 class Style;
@@ -20,6 +20,6 @@ class FontCollection {
   std::vector<const Font*> fonts_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_FONT_COLLECTION_H_
+#endif  // FONTDIFF_FONT_COLLECTION_H_

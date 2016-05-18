@@ -1,10 +1,10 @@
 #include <ft2build.h>
 #include FT_GLYPH_H
 
-#include "ttfdiff/font.h"
-#include "ttfdiff/style_key.h"
+#include "fontdiff/font.h"
+#include "fontdiff/style_key.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 int StyleKey::CompareTo(const StyleKey& other) const {
   int cmp = family.compare(other.family);
@@ -44,4 +44,4 @@ StyleKey StyleKey::Make(const Font& font) {
   return result;
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

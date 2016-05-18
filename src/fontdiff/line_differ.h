@@ -1,9 +1,9 @@
-#ifndef TTFDIFF_LINE_DIFFER_H_
-#define TTFDIFF_LINE_DIFFER_H_
+#ifndef FONTDIFF_LINE_DIFFER_H_
+#define FONTDIFF_LINE_DIFFER_H_
 
-namespace ttfdiff {
+namespace fontdiff {
 class Line;
 bool FindDeltas(Line* before, Line* after);
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_LINE_DIFFER_H_
+#endif  // FONTDIFF_LINE_DIFFER_H_

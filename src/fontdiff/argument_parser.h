@@ -1,10 +1,10 @@
-#ifndef TTFDIFF_ARGUMENT_PARSER_H_
-#define TTFDIFF_ARGUMENT_PARSER_H_
+#ifndef FONTDIFF_ARGUMENT_PARSER_H_
+#define FONTDIFF_ARGUMENT_PARSER_H_
 
 #include <string>
 #include <vector>
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class ArgumentParser {
  public:
@@ -23,6 +23,6 @@ class ArgumentParser {
   std::string output_;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_ARGUMENT_PARSER_H_
+#endif  // FONTDIFF_ARGUMENT_PARSER_H_

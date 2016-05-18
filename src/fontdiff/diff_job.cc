@@ -8,15 +8,15 @@
 #include <expat.h>
 #include <unicode/stringpiece.h>
 
-#include "ttfdiff/diff_job.h"
-#include "ttfdiff/font.h"
-#include "ttfdiff/language.h"
-#include "ttfdiff/page.h"
-#include "ttfdiff/paragraph.h"
-#include "ttfdiff/style.h"
+#include "fontdiff/diff_job.h"
+#include "fontdiff/font.h"
+#include "fontdiff/language.h"
+#include "fontdiff/page.h"
+#include "fontdiff/paragraph.h"
+#include "fontdiff/style.h"
 
 
-namespace ttfdiff {
+namespace fontdiff {
 
 const FT_F26Dot6 DiffJob::pageWidth = 592 * 64;  // DIN A4
 const FT_F26Dot6 DiffJob::pageHeight = 842 * 64;
@@ -186,4 +186,4 @@ void ExpatCallbacks::HandleCharData(void* userData,
   job->HandleCharData(icu::StringPiece(text, len));
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

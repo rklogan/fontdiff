@@ -4,18 +4,18 @@
 #include <unicode/ubidi.h>
 #include <unicode/unistr.h>
 
-#include "ttfdiff/diff_job.h"
-#include "ttfdiff/font_collection.h"
-#include "ttfdiff/icu_helper.h"
-#include "ttfdiff/language.h"
-#include "ttfdiff/line.h"
-#include "ttfdiff/line_differ.h"
-#include "ttfdiff/page.h"
-#include "ttfdiff/paragraph.h"
-#include "ttfdiff/shaped_text.h"
-#include "ttfdiff/style.h"
+#include "fontdiff/diff_job.h"
+#include "fontdiff/font_collection.h"
+#include "fontdiff/icu_helper.h"
+#include "fontdiff/language.h"
+#include "fontdiff/line.h"
+#include "fontdiff/line_differ.h"
+#include "fontdiff/page.h"
+#include "fontdiff/paragraph.h"
+#include "fontdiff/shaped_text.h"
+#include "fontdiff/style.h"
 
-namespace ttfdiff {
+namespace fontdiff {
 
 Paragraph::Paragraph(DiffJob* job,
 		     const FontCollection* beforeFonts,
@@ -302,4 +302,4 @@ void Paragraph::AddRunsToLine(bool before, int32_t start, int32_t limit,
   }
 }
 
-}  // namespace ttfdiff
+}  // namespace fontdiff

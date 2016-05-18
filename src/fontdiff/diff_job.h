@@ -1,5 +1,5 @@
-#ifndef TTFDIFF_DIFF_JOB_H_
-#define TTFDIFF_DIFF_JOB_H_
+#ifndef FONTDIFF_DIFF_JOB_H_
+#define FONTDIFF_DIFF_JOB_H_
 
 #include <string>
 #include <vector>
@@ -8,13 +8,13 @@
 #include FT_GLYPH_H
 #include <unicode/stringpiece.h>
 
-#include "ttfdiff/font_loader.h"
-#include "ttfdiff/style_key.h"
+#include "fontdiff/font_loader.h"
+#include "fontdiff/style_key.h"
 
 typedef struct _cairo cairo_t;
 typedef struct _cairo_surface cairo_surface_t;
 
-namespace ttfdiff {
+namespace fontdiff {
 
 class Language;
 class Page;
@@ -65,6 +65,6 @@ class DiffJob {
   friend class ExpatCallbacks;
 };
 
-}  // namespace ttfdiff
+}  // namespace fontdiff
 
-#endif  // TTFDIFF_DIFF_JOB_H_
+#endif  // FONTDIFF_DIFF_JOB_H_
