@@ -530,6 +530,13 @@
                 'icu_stubdata',
 	        'icu_toolutil',
 	    ],
+            'conditions': [
+                ['OS == "linux"', {
+                    'link_settings': {
+                        'libraries': ['-ldl'],
+                    },
+                }],
+            ],
         },
         {
             'target_name': 'genccode',
@@ -543,6 +550,13 @@
                 'icu_stubdata',
 	        'icu_toolutil',
 	    ],
+            'conditions': [
+                ['OS == "linux"', {
+                    'link_settings': {
+                        'libraries': ['-ldl'],
+                    },
+                }],
+            ],
         },
         {
             'target_name': 'genrb',
@@ -568,6 +582,13 @@
                 'icu_stubdata',
 	        'icu_toolutil',
 	    ],
+            'conditions': [
+                ['OS == "linux"', {
+                    'link_settings': {
+                        'libraries': ['-ldl'],
+                    },
+                }],
+            ],
         },
         {
             'target_name': 'pkgdata',
