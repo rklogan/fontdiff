@@ -56,6 +56,11 @@
             'defines': [
                 'HAVE_CONFIG_H',
             ],
+            'conditions': [
+                ['OS == "linux"', {
+                    'cflags': ['-mssse3'],
+                }],
+            ],
         },
     ],
 }

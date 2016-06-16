@@ -87,6 +87,34 @@
                 '../icu/icu.gyp:icu_uc',
                 '../ragel/ragel.gyp:ragel',
 	    ],
+            'conditions': [
+                ['OS == "linux"', {
+
+                    # This assumes that we're running on Intel.
+                    # The alternative is to run the configuration script, which
+                    # detects architecture. But doing so can cause GLib to be
+                    # chosen over ICU, which causes problems later in linking.
+                    'defines': [
+                        'HAVE_INTEL_ATOMIC_PRIMITIVES',
+                    ],
+
+                    #'actions': [
+                    #    {
+                    #        'action_name': 'gen_config_h',
+                    #        'inputs': ['files/autogen.sh'],
+                    #        'outputs': ['files/config.h'],
+                    #        'action': ['eval', 'cd files && ./autogen.sh'],
+                    #    }
+                    #],
+                    #'defines': [
+                    #    'HAVE_CONFIG_H',
+                    #],
+                    #'include_dirs': [
+                    #    'files',
+                    #],
+
+                }],
+            ],
         },
     ]
 }

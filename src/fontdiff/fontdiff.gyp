@@ -24,6 +24,15 @@
                 '../third_party/freetype/freetype.gyp:freetype',
                 '../third_party/icu/icu.gyp:icu_uc',
             ],
+            'conditions': [
+                ['OS == "linux"', {
+                    # need C++11 flag for unique_ptr
+                    'cflags': ['-std=c++11'],
+                    'link_settings': {
+                        'libraries': ['-ldl'],
+                    },
+                }],
+            ],
         },
         {
             'target_name': 'fontdiff_lib',
@@ -61,6 +70,12 @@
                 '../third_party/icu/icu.gyp:icu_i18n',
                 '../third_party/icu/icu.gyp:icu_uc',
                 '../third_party/icu/icu.gyp:icu_data',
+            ],
+            'conditions': [
+                ['OS == "linux"', {
+                    # need C++11 flag to handle auto keyword
+                    'cflags': ['-std=c++11'],
+                }],
             ],
         },
     ],
