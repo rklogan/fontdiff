@@ -150,7 +150,7 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
       cairo_glyph_t cairoGlyph;
       cairoGlyph.index = glyphs[gi].codepoint;
       cairoGlyph.x = (x + pos[gi].x_offset) / 64.0;
-      cairoGlyph.y = (y + pos[gi].y_offset) / 64.0;
+      cairoGlyph.y = (y - pos[gi].y_offset) / 64.0;
       x += pos[gi].x_advance;
       y += pos[gi].y_advance;
       cairoGlyphs.push_back(cairoGlyph);
@@ -166,7 +166,7 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
       cairo_glyph_t cairoGlyph;
       cairoGlyph.index = glyphs[gi].codepoint;
       cairoGlyph.x = (x + pos[gi].x_offset) / 64.0;
-      cairoGlyph.y = (y + pos[gi].y_offset) / 64.0;
+      cairoGlyph.y = (y - pos[gi].y_offset) / 64.0;
       x += pos[gi].x_advance;
       y += pos[gi].y_advance;
       cairoGlyphs.push_back(cairoGlyph);
