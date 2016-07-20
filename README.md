@@ -86,7 +86,7 @@ $ build/out/Default/fontdiff \
     --out out.pdf
 ```
 
-This incantation works on reasonably recent versions of MacOS X.
+This incantation works on reasonably recent versions of Linux and MacOS X.
 If you want to support other platforms, feel free to make the change.
 Pull requests are very welcome!
 
