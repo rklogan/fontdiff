@@ -201,18 +201,25 @@ void Paragraph::ShapeSpan(int32_t start, int32_t limit,
     return;
   }
 
+  hb_unicode_funcs_t* unicodeFuncs = hb_unicode_funcs_get_default();
   int32_t pos = start, last = start;
   const Font* lastFont = NULL;
+  hb_script_t lastScript = HB_SCRIPT_INVALID;
   while (pos < limit) {
     const UChar32 curChar = text_.char32At(pos);
+    hb_script_t curScript = hb_unicode_script(unicodeFuncs, curChar);
+    if (curScript == HB_SCRIPT_COMMON || curScript == HB_SCRIPT_INHERITED) {
+      curScript = lastScript;
+    }
     const Font* curFont = fonts->FindFont(curChar, style, lastFont);
-    if (curFont != lastFont) {
+    if (curFont != lastFont || curScript != lastScript) {
       if (lastFont && last < pos) {
 	result->push_back(
 	    new ShapedText(text_.getBuffer(), last, pos,
-			   bidiLevel, lastFont, style));
+			   bidiLevel, lastScript, lastFont, style));
       }
       lastFont = curFont;
+      lastScript = curScript;
       last = pos;
     }
     ++pos;
@@ -224,7 +231,7 @@ void Paragraph::ShapeSpan(int32_t start, int32_t limit,
   if (lastFont && last < limit) {
     result->push_back(
         new ShapedText(text_.getBuffer(), last, limit,
-		       bidiLevel, lastFont, style));
+		       bidiLevel, lastScript, lastFont, style));
   }
 }
 

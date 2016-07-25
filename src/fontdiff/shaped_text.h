@@ -34,7 +34,8 @@ class Style;
 class ShapedText {
  public:
   ShapedText(const UChar* text, int32_t start, int32_t limit,
-             UBiDiLevel bidiLevel, const Font* font, const Style* style);
+             UBiDiLevel bidiLevel, hb_script_t script,
+             const Font* font, const Style* style);
   ~ShapedText();
   int32_t GetStart() const { return start_; }
   int32_t GetLimit() const { return limit_; }

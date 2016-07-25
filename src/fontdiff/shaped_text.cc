@@ -32,7 +32,7 @@
 namespace fontdiff {
 
 ShapedText::ShapedText(const UChar* text, int32_t start, int32_t limit,
-                       UBiDiLevel bidiLevel,
+                       UBiDiLevel bidiLevel, hb_script_t script,
                        const Font* font, const Style* style)
   : text_(text), start_(start), limit_(limit), bidiLevel_(bidiLevel),
     font_(font), style_(style),
@@ -47,7 +47,7 @@ ShapedText::ShapedText(const UChar* text, int32_t start, int32_t limit,
   props.direction = bidiLevel & 1 ? HB_DIRECTION_RTL : HB_DIRECTION_LTR;
   const Language* lang = style->GetLanguage();
   props.language = lang ? lang->GetHarfbuzzLanguage() : HB_LANGUAGE_INVALID;
-  props.script = lang ? lang->GetHarfbuzzScript() : HB_SCRIPT_INVALID;
+  props.script = script;
   hb_buffer_set_segment_properties(hb_buffer_, &props);
   Shape();
 }
