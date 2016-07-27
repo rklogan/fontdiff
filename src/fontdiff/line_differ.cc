@@ -15,46 +15,116 @@
  */
 
 #include <memory>
-#include <string>
+#include <vector>
 
 #include "cairo.h"
 #include "fontdiff/line.h"
+#include "fontdiff/line_differ.h"
 
 namespace fontdiff {
 
-bool FindDeltas(const Line* before, const Line* after) {
-  const int scale = 4;
-  FT_F26Dot6 width = std::max(before->GetWidth(), after->GetWidth());
-  FT_F26Dot6 height = std::max(before->GetHeight(), after->GetHeight());
-  cairo_surface_t* beforeSurface =
-      cairo_image_surface_create(CAIRO_FORMAT_A1,
-				 (width * scale) / 64, (height * scale) / 64);
-  cairo_surface_t* afterSurface =
-      cairo_image_surface_create(CAIRO_FORMAT_A1,
-				 (width * scale) / 64, (height * scale) / 64);
+class LineDiffer {
+ public:
+  LineDiffer(const Line* before, const Line* after);
+  ~LineDiffer();
+  void FindDiffs(std::vector<DeltaRange>* removals,
+                 std::vector<DeltaRange>* additions) const;
 
-  cairo_t* beforeGC = cairo_create(beforeSurface);
-  cairo_t* afterGC = cairo_create(afterSurface);
-  cairo_scale(beforeGC, scale, scale);
-  cairo_scale(afterGC, scale, scale);
+ private:
+  bool IsImageColumnEqual(int x) const;
+
+  static const int scale_;
+  FT_F26Dot6 width_, height_;
+  cairo_surface_t* beforeSurface_;
+  cairo_surface_t* afterSurface_;
+  unsigned const char* beforeData_;
+  unsigned const char* afterData_;
+  size_t imageWidth_, imageHeight_, imageStride_;
+};
+
+const int LineDiffer::scale_ = 8;
+
+LineDiffer::LineDiffer(const Line* before, const Line* after) {
+  width_ = std::max(before->GetWidth(), after->GetWidth());
+  height_ = std::max(before->GetHeight(), after->GetHeight());
+  beforeSurface_ =
+      cairo_image_surface_create(CAIRO_FORMAT_A1,
+                                 (width_ * scale_) / 64,
+                                 (height_ * scale_) / 64);
+  afterSurface_ =
+      cairo_image_surface_create(CAIRO_FORMAT_A1,
+                                 (width_ * scale_) / 64,
+                                 (height_ * scale_) / 64);
+  cairo_t* beforeGC = cairo_create(beforeSurface_);
+  cairo_t* afterGC = cairo_create(afterSurface_);
+  cairo_scale(beforeGC, scale_, scale_);
+  cairo_scale(afterGC, scale_, scale_);
   before->Render(beforeGC, 0, 0);
   after->Render(afterGC, 0, 0);
   cairo_destroy(beforeGC);
   cairo_destroy(afterGC);
+  cairo_surface_flush(beforeSurface_);
+  cairo_surface_flush(afterSurface_);
 
-  cairo_surface_flush(beforeSurface);
-  cairo_surface_flush(afterSurface);
-  unsigned char* beforeData = cairo_image_surface_get_data(beforeSurface);
-  unsigned char* afterData = cairo_image_surface_get_data(afterSurface);
-  const size_t imageHeight =
-      static_cast<size_t>(cairo_image_surface_get_height(beforeSurface));
-  const size_t imageStride =
-      static_cast<size_t>(cairo_image_surface_get_stride(beforeSurface));
-  const bool equal =
-      memcmp(beforeData, afterData, imageStride * imageHeight) == 0;
-  cairo_surface_destroy(beforeSurface);
-  cairo_surface_destroy(afterSurface);
-  return !equal;  // if the two lines are not equal, we found some deltas
+  beforeData_ = cairo_image_surface_get_data(beforeSurface_);
+  afterData_ = cairo_image_surface_get_data(afterSurface_);
+
+  imageWidth_ =
+      static_cast<size_t>(cairo_image_surface_get_width(beforeSurface_));
+  imageHeight_ =
+      static_cast<size_t>(cairo_image_surface_get_height(beforeSurface_));
+  imageStride_ =
+      static_cast<size_t>(cairo_image_surface_get_stride(beforeSurface_));
+}
+
+LineDiffer::~LineDiffer() {
+  cairo_surface_destroy(beforeSurface_);
+  cairo_surface_destroy(afterSurface_);
+}
+
+void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
+                           std::vector<DeltaRange>* additions) const {
+  removals->clear();
+  additions->clear();
+  if (memcmp(beforeData_, afterData_, imageStride_ * imageHeight_) == 0) {
+    return;
+  }
+
+  int x = 0;
+  for (x = 0; x < imageWidth_ && IsImageColumnEqual(x); ++x) {
+  }
+
+  DeltaRange r;
+  r.x = x * 512 / scale_;
+  r.width = width_ - r.x;
+  additions->push_back(r);
+  removals->push_back(r);
+}
+
+bool LineDiffer::IsImageColumnEqual(int x) const {
+  if (x < 0 || x >= imageWidth_) {
+    return true;
+  }
+
+  unsigned const char* a = beforeData_ + x;
+  unsigned const char* b = afterData_ + x;
+  unsigned const char* stop = a + (imageHeight_ * imageStride_);
+  while (a < stop) {
+    if (*a != *b) {
+      return false;
+    }
+    a += imageStride_;
+    b += imageStride_;
+  }
+  return true;
+}
+
+bool FindDeltas(const Line* before, const Line* after,
+                std::vector<DeltaRange>* removals,
+                std::vector<DeltaRange>* additions) {
+  LineDiffer differ(before, after);
+  differ.FindDiffs(removals, additions);
+  return !removals->empty() || !additions->empty();
 }
 
 }  // namespace fontdiff

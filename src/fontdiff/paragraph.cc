@@ -153,13 +153,21 @@ void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
 		  afterLine.get());
   }
   if (numRuns > 0) {
-    bool hasDeltas = FindDeltas(beforeLine.get(), afterLine.get());
+    std::vector<DeltaRange> removals, additions;
+    bool hasDeltas = FindDeltas(beforeLine.get(), afterLine.get(),
+                                &removals, &additions);
     FT_F26Dot6 height = afterLine->GetHeight();
     if (hasDeltas) {
       job_->SetHasDiffs();
       height += beforeLine->GetHeight();
       beforeLine->SetBackgroundColor(0xffecec);
+      for (const DeltaRange& range : removals) {
+        beforeLine->AddHighlight(range.x, range.width, 0xff8a8a);
+      }
       afterLine->SetBackgroundColor(0xeaffea);
+      for (const DeltaRange& range : additions) {
+        afterLine->AddHighlight(range.x, range.width, 0x8aff8a);
+      }
     }
     Page* page = job_->GetCurrentPage();
     if (page->GetY() + height >= DiffJob::pageHeight - DiffJob::marginWidth) {

@@ -17,9 +17,24 @@
 #ifndef FONTDIFF_LINE_DIFFER_H_
 #define FONTDIFF_LINE_DIFFER_H_
 
+#include <vector>
+
+#include <ft2build.h>
+#include FT_GLYPH_H
+
 namespace fontdiff {
+
 class Line;
-bool FindDeltas(const Line* before, const Line* after);
+
+struct DeltaRange {
+  FT_F26Dot6 x;
+  FT_F26Dot6 width;
+};
+
+bool FindDeltas(const Line* before, const Line* after,
+                std::vector<DeltaRange>* removals,
+                std::vector<DeltaRange>* additions);
+
 }  // namespace fontdiff
 
 #endif  // FONTDIFF_LINE_DIFFER_H_
