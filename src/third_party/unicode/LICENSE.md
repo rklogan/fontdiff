@@ -1,4 +1,4 @@
-+ Unicode Data License
+# Unicode Data License
 
 Copyright © 1991-2016 Unicode, Inc. All rights reserved.
 Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
