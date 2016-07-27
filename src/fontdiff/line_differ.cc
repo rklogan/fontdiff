@@ -22,7 +22,7 @@
 
 namespace fontdiff {
 
-bool FindDeltas(Line* before, Line* after) {
+bool FindDeltas(const Line* before, const Line* after) {
   const int scale = 4;
   FT_F26Dot6 ascender = std::max(before->GetAscender(), after->GetAscender());
   FT_F26Dot6 descender =
@@ -57,14 +57,7 @@ bool FindDeltas(Line* before, Line* after) {
       memcmp(beforeData, afterData, imageStride * imageHeight) == 0;
   cairo_surface_destroy(beforeSurface);
   cairo_surface_destroy(afterSurface);
-
-  if (equal) {
-    return false;  // no deltas found
-  } else {
-    before->SetBackgroundColor(0xffecec);
-    after->SetBackgroundColor(0xeaffea);
-    return true;  // some deltas found
-  }
+  return !equal;  // if the two lines are not equal, we found some deltas
 }
 
 }  // namespace fontdiff

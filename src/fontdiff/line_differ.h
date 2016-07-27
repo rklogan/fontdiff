@@ -19,7 +19,7 @@
 
 namespace fontdiff {
 class Line;
-bool FindDeltas(Line* before, Line* after);
+bool FindDeltas(const Line* before, const Line* after);
 }  // namespace fontdiff
 
 #endif  // FONTDIFF_LINE_DIFFER_H_
