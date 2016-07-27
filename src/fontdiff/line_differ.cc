@@ -24,11 +24,8 @@ namespace fontdiff {
 
 bool FindDeltas(const Line* before, const Line* after) {
   const int scale = 4;
-  FT_F26Dot6 ascender = std::max(before->GetAscender(), after->GetAscender());
-  FT_F26Dot6 descender =
-      std::min(before->GetDescender(), after->GetDescender());
   FT_F26Dot6 width = std::max(before->GetWidth(), after->GetWidth());
-  FT_F26Dot6 height = ascender - descender;
+  FT_F26Dot6 height = std::max(before->GetHeight(), after->GetHeight());
   cairo_surface_t* beforeSurface =
       cairo_image_surface_create(CAIRO_FORMAT_A1,
 				 (width * scale) / 64, (height * scale) / 64);
@@ -40,8 +37,8 @@ bool FindDeltas(const Line* before, const Line* after) {
   cairo_t* afterGC = cairo_create(afterSurface);
   cairo_scale(beforeGC, scale, scale);
   cairo_scale(afterGC, scale, scale);
-  before->Render(beforeGC, 0, ascender);
-  after->Render(afterGC, 0, ascender);
+  before->Render(beforeGC, 0, 0);
+  after->Render(afterGC, 0, 0);
   cairo_destroy(beforeGC);
   cairo_destroy(afterGC);
 

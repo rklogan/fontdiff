@@ -47,7 +47,8 @@ void Line::AddShapedText(const ShapedText* text,
 
 void Line::Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
   for (const Run& run : runs_) {
-    run.text->Render(run.start, run.limit, gc, x + run.x, y);
+    run.text->Render(run.start, run.limit, gc,
+                     x + run.x, y + GetAscender());
   }
 }
 
@@ -56,8 +57,8 @@ void Line::RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
     return;
   }
   SetSourceColor(gc, backgroundColor_);
-  cairo_rectangle(gc, x / 64.0 - 1.0, (y - ascender_) / 64.0,
-		  width_/64.0 + 2.0, (ascender_ - descender_) / 64.0);
+  cairo_rectangle(gc, x / 64.0 - 1.0, y / 64.0,
+		  GetWidth() / 64.0 + 2.0, GetHeight() / 64.0);
   cairo_fill(gc);
   SetSourceColor(gc, 0);
 }

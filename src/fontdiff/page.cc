@@ -39,7 +39,7 @@ void Page::AddLine(Line* line, FT_F26Dot6 x, FT_F26Dot6 y) {
   pline.x = x;
   pline.y = y;
   lines_.push_back(pline);
-  yPos_ += line->GetAscender() - line->GetDescender();
+  yPos_ = y + line->GetHeight();
 }
 
 void Page::Render(cairo_t* gc) const {
