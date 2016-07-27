@@ -45,6 +45,14 @@ void Line::AddShapedText(const ShapedText* text,
   descender_ = std::min(descender_, text->GetDescender());
 }
 
+void Line::AddHighlight(FT_F26Dot6 x, FT_F26Dot6 width, uint32_t color) {
+  Highlight h;
+  h.x = x;
+  h.width = width;
+  h.color = color;
+  highlights_.push_back(h);
+}
+
 void Line::Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
   for (const Run& run : runs_) {
     run.text->Render(run.start, run.limit, gc,
@@ -53,13 +61,20 @@ void Line::Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
 }
 
 void Line::RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const {
-  if (backgroundColor_ == 0xffffff) {
-    return;
+  if (backgroundColor_ != 0xffffff) {
+    SetSourceColor(gc, backgroundColor_);
+    cairo_rectangle(gc, x / 64.0 - 1.0, y / 64.0,
+                    GetWidth() / 64.0 + 2.0, GetHeight() / 64.0);
+    cairo_fill(gc);
   }
-  SetSourceColor(gc, backgroundColor_);
-  cairo_rectangle(gc, x / 64.0 - 1.0, y / 64.0,
-		  GetWidth() / 64.0 + 2.0, GetHeight() / 64.0);
-  cairo_fill(gc);
+
+  for (const Highlight& h : highlights_) {
+    SetSourceColor(gc, h.color);
+    cairo_rectangle(gc, (x + h.x) / 64.0, y / 64.0,
+		    h.width / 64.0, GetHeight() / 64.0);
+    cairo_fill(gc);
+  }
+
   SetSourceColor(gc, 0);
 }
 

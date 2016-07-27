@@ -33,12 +33,16 @@ class Line {
  public:
   Line(FT_F26Dot6 width);
   ~Line();
-  void SetBackgroundColor(uint32_t rgb) { backgroundColor_ = rgb; }
-  void AddShapedText(const ShapedText* text, int32_t start, int32_t limit);
+
   FT_F26Dot6 GetWidth() const { return width_; }
   FT_F26Dot6 GetHeight() const { return GetAscender() - GetDescender(); }
+
   void Render(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const;
   void RenderHighlights(cairo_t* gc, FT_F26Dot6 x, FT_F26Dot6 y) const;
+
+  void AddShapedText(const ShapedText* text, int32_t start, int32_t limit);
+  void SetBackgroundColor(uint32_t rgb) { backgroundColor_ = rgb; }
+  void AddHighlight(FT_F26Dot6 x, FT_F26Dot6 width, uint32_t color);
 
  private:
   struct Run {
@@ -47,10 +51,17 @@ class Line {
     int32_t start, limit;
   };
 
+  struct Highlight {
+    FT_F26Dot6 x;
+    FT_F26Dot6 width;
+    uint32_t color;
+  };
+
   FT_F26Dot6 GetAscender() const { return ascender_; }
   FT_F26Dot6 GetDescender() const { return descender_; }
 
   std::vector<Run> runs_;
+  std::vector<Highlight> highlights_;
   FT_F26Dot6 width_, xAdvance_, ascender_, descender_;
   uint32_t backgroundColor_;
 };
