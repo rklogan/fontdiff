@@ -160,13 +160,13 @@ void Paragraph::AddLine(UBiDi* paraBidi, UBiDi* lineBidi, FT_F26Dot6 width,
     if (hasDeltas) {
       job_->SetHasDiffs();
       height += beforeLine->GetHeight();
-      beforeLine->SetBackgroundColor(0xffecec);
+      beforeLine->SetBackgroundColor(0xffeeee);
       for (const DeltaRange& range : removals) {
-        beforeLine->AddHighlight(range.x, range.width, 0xff8a8a);
+        beforeLine->AddHighlight(range.x, range.width, 0xffcccc);
       }
-      afterLine->SetBackgroundColor(0xeaffea);
+      afterLine->SetBackgroundColor(0xeeffee);
       for (const DeltaRange& range : additions) {
-        afterLine->AddHighlight(range.x, range.width, 0x8aff8a);
+        afterLine->AddHighlight(range.x, range.width, 0x99ff99);
       }
     }
     Page* page = job_->GetCurrentPage();
