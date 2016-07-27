@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace fontdiff {
 
@@ -29,12 +30,12 @@ class FontLoader {
  public:
   FontLoader();
   ~FontLoader();
-  Font* Load(const std::string& path);
   FontCollection* LoadCollection(const std::vector<std::string>& paths);
 
  private:
   static std::string GetSHA1(const std::string& filepath);
-  std::map<std::string, Font*> fonts_;
+  std::vector<Font*>* Load(const std::string& path);
+  std::map<std::string, std::vector<Font*>*> fonts_;
 };
 
 }  // namespace fontdiff

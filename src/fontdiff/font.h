@@ -18,6 +18,7 @@
 #define FONTDIFF_FONT_H_
 
 #include <string>
+#include <vector>
 
 #include <ft2build.h>
 #include FT_GLYPH_H
@@ -28,7 +29,7 @@ namespace fontdiff {
 
 class Font {
  public:
-  static Font* Load(const std::string& path);
+  static std::vector<Font*>* Load(const std::string& path);
   ~Font();
 
   const std::string& GetPostScriptName() const { return psname_; }

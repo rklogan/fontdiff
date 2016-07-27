@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <stdlib.h>
 #include "fontdiff/font.h"
 #include "fontdiff/font_collection.h"
 #include "fontdiff/font_loader.h"
@@ -25,24 +26,37 @@ FontLoader::FontLoader() {
 }
 
 FontLoader::~FontLoader() {
+  for (auto p : fonts_) {
+    for (Font* font : *p.second) {
+      delete font;
+    }
+    delete p.second;
+  }
 }
 
-Font* FontLoader::Load(const std::string& path) {
+std::vector<Font*>* FontLoader::Load(const std::string& path) {
   std::string key = GetFileSHA1(path);
-  Font* font = fonts_[key];
-  if (!font) {
-    font = fonts_[key] = Font::Load(path);
+  std::vector<Font*>* fonts = fonts_[key];
+  if (!fonts) {
+    fonts = fonts_[key] = Font::Load(path);
   }
-  return font;
+  return fonts;
 }
 
 FontCollection* FontLoader::LoadCollection(
     const std::vector<std::string>& paths) {
-  std::vector<const Font*> fonts;
+  std::vector<const Font*> result;
   for (int i = 0; i < paths.size(); ++i) {
-    fonts.push_back(Load(paths[i]));
+    std::vector<Font*>* fonts = Load(paths[i]);
+    if (!fonts || fonts->size() == 0) {
+      fprintf(stderr, "could not load any fonts from %s\n", paths[i].c_str());
+      exit(2);
+    }
+    for (const Font* font : *fonts) {
+      result.push_back(font);
+    }
   }
-  return new FontCollection(fonts);
+  return new FontCollection(result);
 }
 
 }  // namespace fontdiff

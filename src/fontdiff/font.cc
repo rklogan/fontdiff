@@ -25,22 +25,40 @@
 
 namespace fontdiff {
 
-static FT_Library freeTypeLibrary_;
+static FT_Library freeTypeLibrary_ = NULL;
 static bool freeTypeLibraryInited_ = false;
 
-Font* Font::Load(const std::string& path) {
-  if (!freeTypeLibrary_) {
+std::vector<Font*>* Font::Load(const std::string& path) {
+  if (!freeTypeLibraryInited_) {
     // We do not care about thread safety for this tool.
     FT_Init_FreeType(&freeTypeLibrary_);
     freeTypeLibraryInited_ = true;
   }
 
+  FT_Long numFaces = 0;
   FT_Face face = NULL;
-  FT_Error error = FT_New_Face(
-      freeTypeLibrary_, path.c_str(), 0, &face);
-  if (face && !error) {
-    return new Font(face);
+  FT_Error error = FT_New_Face(freeTypeLibrary_, path.c_str(), -1, &face);
+  if (face) {
+    if (!error) {
+      numFaces = face->num_faces;
+    }
+    FT_Done_Face(face);
+  }
+
+  std::vector<Font*>* result = new std::vector<Font*>();
+  for (FT_Long i = 0; i < numFaces; ++i) {
+    FT_Face face = NULL;
+    FT_Error error = FT_New_Face(
+        freeTypeLibrary_, path.c_str(), i, &face);
+    if (face && !error) {
+      result->push_back(new Font(face));
+    }
+  }
+
+  if (result->size() > 0) {
+    return result;
   } else {
+    delete result;
     return NULL;
   }
 }
