@@ -44,31 +44,37 @@ class ExpatCallbacks {
 
  private:
   static void HandleStartElement(void* userData,
-				 const XML_Char* name,
-				 const XML_Char** attrs);
+                                 const XML_Char* name,
+                                 const XML_Char** attrs);
   static void HandleEndElement(void* userData, const XML_Char* name);
   static void HandleCharData(void* userData, const XML_Char *s, int len);
 };
 
 DiffJob::DiffJob(const FontCollection* beforeFonts,
-		 const FontCollection* afterFonts,
-		 const std::string& outputPath)
+                 const FontCollection* afterFonts)
   : has_diffs_(false),
-    beforeFonts_(beforeFonts), afterFonts_(afterFonts),
-    pdf_surface_(
-        cairo_pdf_surface_create(outputPath.c_str(),
-				 pageWidth / 64.0, pageHeight / 64.0)),
-    pdf_(cairo_create(pdf_surface_)) {
+    beforeFonts_(beforeFonts), afterFonts_(afterFonts) {
   pages_.push_back(new Page());
 }
 
 DiffJob::~DiffJob() {
-  cairo_destroy(pdf_);
-  cairo_surface_destroy(pdf_surface_);
   for (auto style : styles_) delete style;
   for (auto lang : languages_) delete lang.second;
   for (auto p : paragraphs_) delete p;
   for (auto p : pages_) delete p;
+}
+
+void DiffJob::WritePDF(const std::string& filepath) {
+  cairo_surface_t* pdf_surface =
+      cairo_pdf_surface_create(filepath.c_str(),
+                               pageWidth / 64.0, pageHeight / 64.0);
+  cairo_t* pdf = cairo_create(pdf_surface);
+  for (const Page* page : pages_) {
+    page->Render(pdf);
+    cairo_show_page(pdf);
+  }
+  cairo_destroy(pdf);
+  cairo_surface_destroy(pdf_surface);
 }
 
 Page* DiffJob::AddPage() {
@@ -119,7 +125,7 @@ void DiffJob::HandleCharData(const StringPiece& text) {
   e.paragraph->AppendSpan(text, e.style);
 }
 
-void DiffJob::Render(const std::string& specimenPath) {
+void DiffJob::RenderHTML(const std::string& filepath) {
   xmlElements_.clear();
   XMLElement rootElement;
   rootElement.name = "";
@@ -132,9 +138,9 @@ void DiffJob::Render(const std::string& specimenPath) {
 
   XML_Parser parser = XML_ParserCreate("utf-8");
   ExpatCallbacks::Install(parser, this);
-  FILE* file = fopen(specimenPath.c_str(), "rb");
+  FILE* file = fopen(filepath.c_str(), "rb");
   if (!file) {
-    perror(specimenPath.c_str());
+    perror(filepath.c_str());
     exit(2);
   }
   const size_t blockSize = 64 * 1024;
@@ -142,14 +148,14 @@ void DiffJob::Render(const std::string& specimenPath) {
   while (!feof(file)) {
     size_t n = fread(block, 1, blockSize, file);
     if (ferror(file)) {
-      perror(specimenPath.c_str());
+      perror(filepath.c_str());
       exit(2);
     }
     if (XML_Parse(parser, reinterpret_cast<const char*>(block), n, feof(file))
-	!= XML_STATUS_OK) {
+        != XML_STATUS_OK) {
       fflush(stdout);
-      fprintf(stderr, "%s: %s\n", specimenPath.c_str(),
-	     XML_ErrorString(XML_GetErrorCode(parser)));
+      fprintf(stderr, "%s: %s\n", filepath.c_str(),
+              XML_ErrorString(XML_GetErrorCode(parser)));
       exit(2);
     }
   }
@@ -157,10 +163,6 @@ void DiffJob::Render(const std::string& specimenPath) {
   fclose(file);
   for (auto p : paragraphs_) {
     p->Layout(pageWidth - 2 * marginWidth);
-  }
-  for (auto page : pages_) {
-    page->Render(pdf_);
-    cairo_show_page(pdf_);
   }
 }
 
@@ -197,7 +199,7 @@ void ExpatCallbacks::HandleEndElement(void* userData, const XML_Char* name) {
 }
 
 void ExpatCallbacks::HandleCharData(void* userData,
-				    const XML_Char* text, int len) {
+                                    const XML_Char* text, int len) {
   DiffJob* job = reinterpret_cast<DiffJob*>(userData);
   job->HandleCharData(icu::StringPiece(text, len));
 }

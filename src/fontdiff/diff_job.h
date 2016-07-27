@@ -27,9 +27,6 @@
 #include "fontdiff/font_loader.h"
 #include "fontdiff/style_key.h"
 
-typedef struct _cairo cairo_t;
-typedef struct _cairo_surface cairo_surface_t;
-
 namespace fontdiff {
 
 class Language;
@@ -42,12 +39,12 @@ class DiffJob {
   static const FT_F26Dot6 pageWidth, pageHeight, marginWidth;
 
   DiffJob(const FontCollection* beforeFonts,
-	  const FontCollection* afterFonts,
-	  const std::string& outputPath);
+	  const FontCollection* afterFonts);
   ~DiffJob();
   Page* GetCurrentPage() { return pages_.back(); }
   Page* AddPage();
-  void Render(const std::string& specimenPath);
+  void RenderHTML(const std::string& filepath);
+  void WritePDF(const std::string& filepath);
   bool HasDiffs() const { return has_diffs_; }
   void SetHasDiffs() { has_diffs_ = true; }
 
@@ -71,8 +68,6 @@ class DiffJob {
   bool has_diffs_;
   const FontCollection* beforeFonts_;
   const FontCollection* afterFonts_;
-  cairo_surface_t* pdf_surface_;  // owned
-  cairo_t* pdf_;  // owned
   std::map<std::string, Language*> languages_;  // owned
   std::vector<Style*> styles_;  // owned
   std::vector<Paragraph*> paragraphs_;  // owned

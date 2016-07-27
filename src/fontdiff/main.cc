@@ -31,7 +31,8 @@ int main(int argc, const char** argv) {
       loader.LoadCollection(args.beforeFonts()));
   std::unique_ptr<fontdiff::FontCollection> afterFonts(
       loader.LoadCollection(args.afterFonts()));
-  fontdiff::DiffJob job(beforeFonts.get(), afterFonts.get(), args.output());
-  job.Render(args.specimen());
+  fontdiff::DiffJob job(beforeFonts.get(), afterFonts.get());
+  job.RenderHTML(args.specimen());
+  job.WritePDF(args.output());
   return job.HasDiffs() ? 1 : 0;
 }
