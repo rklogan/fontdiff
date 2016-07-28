@@ -31,7 +31,8 @@ class LineDiffer {
                  std::vector<DeltaRange>* additions) const;
 
  private:
-  bool IsImageColumnEqual(int x) const;
+  bool IsImageColumnEqual(int x1, int x2) const;
+  void ComputeHash(unsigned const char* data, std::vector<uint32_t>* hash);
 
   static const int scale_;
   FT_F26Dot6 width_, height_;
@@ -40,6 +41,7 @@ class LineDiffer {
   unsigned const char* beforeData_;
   unsigned const char* afterData_;
   size_t imageWidth_, imageHeight_, imageStride_;
+  std::vector<uint32_t> beforeHash_, afterHash_;
 };
 
 const int LineDiffer::scale_ = 8;
@@ -75,6 +77,27 @@ LineDiffer::LineDiffer(const Line* before, const Line* after) {
       static_cast<size_t>(cairo_image_surface_get_height(beforeSurface_));
   imageStride_ =
       static_cast<size_t>(cairo_image_surface_get_stride(beforeSurface_));
+
+  ComputeHash(beforeData_, &beforeHash_);
+  ComputeHash(afterData_, &afterHash_);
+}
+
+void LineDiffer::ComputeHash(unsigned const char* data,
+			     std::vector<uint32_t>* hash) {
+  // https://en.wikipedia.org/wiki/Jenkins_hash_function
+  hash->resize(imageWidth_, 0);
+  for (size_t x = 0; x < imageWidth_; ++x) {
+    uint32_t h = (*hash)[x];
+    for (size_t y = 0; y < imageHeight_; ++y) {
+      h += static_cast<int8_t>(data[y * imageStride_ + x]);
+      h += (h << 10);
+      h ^= (h >> 6);
+    }
+    h += (h << 3);
+    h ^= (h >> 11);
+    h += (h << 15);
+    (*hash)[x] = h;
+  }
 }
 
 LineDiffer::~LineDiffer() {
@@ -91,7 +114,7 @@ void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
   }
 
   int x = 0;
-  for (x = 0; x < imageWidth_ && IsImageColumnEqual(x); ++x) {
+  for (x = 0; x < imageWidth_ && IsImageColumnEqual(x, x); ++x) {
   }
 
   DeltaRange r;
@@ -101,13 +124,17 @@ void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
   removals->push_back(r);
 }
 
-bool LineDiffer::IsImageColumnEqual(int x) const {
-  if (x < 0 || x >= imageWidth_) {
+bool LineDiffer::IsImageColumnEqual(int x1, int x2) const {
+  if (x1 < 0 || x1 >= imageWidth_ || x2 < 0 || x2 >= imageWidth_) {
     return true;
   }
 
-  unsigned const char* a = beforeData_ + x;
-  unsigned const char* b = afterData_ + x;
+  if (beforeHash_[x1] != afterHash_[x2]) {
+    return false;
+  }
+
+  unsigned const char* a = beforeData_ + x1;
+  unsigned const char* b = afterData_ + x2;
   unsigned const char* stop = a + (imageHeight_ * imageStride_);
   while (a < stop) {
     if (*a != *b) {
