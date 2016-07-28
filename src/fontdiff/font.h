@@ -43,6 +43,7 @@ class Font {
   cairo_font_face_t* GetCairoFace() const { return cairo_face_; }
 
  private:
+  static FT_UShort MapWeightClass(FT_UShort weight);
   Font(FT_Face face);
 
   FT_Face ft_face_;
