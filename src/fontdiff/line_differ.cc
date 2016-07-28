@@ -20,6 +20,7 @@
 #include "cairo.h"
 #include "fontdiff/line.h"
 #include "fontdiff/line_differ.h"
+#include "dtl/dtl.hpp"
 
 namespace fontdiff {
 

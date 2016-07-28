@@ -64,6 +64,7 @@
             ],
             'dependencies': [
                 '../third_party/cairo/cairo.gyp:cairo',
+                '../third_party/dtl/dtl.gyp:dtl',
                 '../third_party/expat/expat.gyp:expat',
                 '../third_party/freetype/freetype.gyp:freetype',
                 '../third_party/harfbuzz/harfbuzz.gyp:harfbuzz',
