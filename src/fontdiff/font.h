@@ -47,8 +47,10 @@ class Font {
   static FT_ULong weightAxisTag, widthAxisTag, opticalSizeAxisTag;
   static double MapWeightClass(FT_UShort weightClass);
   static double MapWidthClass(FT_UShort widthClass);
-  Font(FT_Face face);
+  Font(const std::string& filepath, int index);
 
+  const std::string filepath_;
+  const int fontIndex_;
   FT_Face ft_face_;
   FT_MM_Var* ft_variations_;
 

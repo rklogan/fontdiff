@@ -53,12 +53,7 @@ std::vector<Font*>* Font::Load(const std::string& path) {
 
   std::vector<Font*>* result = new std::vector<Font*>();
   for (FT_Long i = 0; i < numFaces; ++i) {
-    FT_Face face = NULL;
-    FT_Error error = FT_New_Face(
-        freeTypeLibrary_, path.c_str(), i, &face);
-    if (face && !error) {
-      result->push_back(new Font(face));
-    }
+    result->push_back(new Font(path, i));
   }
 
   if (result->size() > 0) {
@@ -69,14 +64,17 @@ std::vector<Font*>* Font::Load(const std::string& path) {
   }
 }
 
-Font::Font(FT_Face face)
-  : ft_face_(face),
-    ft_variations_(NULL),
-    cairo_face_(
-        cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING)),
-    family_(face->family_name),
-    style_(face->style_name),
+Font::Font(const std::string& filepath, int index)
+  : filepath_(filepath), fontIndex_(index),
+    ft_face_(NULL), ft_variations_(NULL),
     defaultWidth_(100), defaultWeight_(400), italicAngle_(0) {
+  FT_Error error =
+      FT_New_Face(freeTypeLibrary_, filepath.c_str(), index, &ft_face_);
+  FT_Face face = ft_face_;
+  family_ = face->family_name;
+  style_ = face->style_name;
+  cairo_face_ =
+      cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING);
   const char* psname = FT_Get_Postscript_Name(ft_face_);
   if (psname) {
     psname_ = psname;
@@ -130,6 +128,9 @@ Font::Font(FT_Face face)
 Font::~Font() {
   if (ft_variations_) {
     free(ft_variations_);
+  }
+  if (ft_face_) {
+    FT_Done_Face(ft_face_);
   }
 }
 
