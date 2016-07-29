@@ -52,15 +52,23 @@ class Font {
   static const FT_ULong weightAxisTag, widthAxisTag, opticalSizeAxisTag;
   static double MapWeightClass(FT_UShort weightClass);
   static double MapWidthClass(FT_UShort widthClass);
+
+  struct Instance {
+    FT_Face freeTypeFace;
+    hb_font_t* harfBuzzFont;
+    cairo_font_face_t* cairoFace;
+  };
+
   Font(const std::string& filepath, int index);
+
+  const Instance* GetInstance(
+      double weight, double width, double opticalSize) const;
 
   const std::string filepath_;
   const int fontIndex_;
-  FT_Face ft_face_;
-  FT_MM_Var* ft_variations_;
+  FT_MM_Var* variations_;
+  Instance defaultInstance_;
 
-  hb_font_t* harfBuzzFont_;
-  cairo_font_face_t* cairo_face_;
   double minWidth_, defaultWidth_, maxWidth_;     // 50..200
   double minWeight_, defaultWeight_, maxWeight_;  // 100..1000
   FT_Fixed italicAngle_;

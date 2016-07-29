@@ -68,24 +68,25 @@ std::vector<Font*>* Font::Load(const std::string& path) {
 
 Font::Font(const std::string& filepath, int index)
   : filepath_(filepath), fontIndex_(index),
-    ft_face_(NULL), ft_variations_(NULL), harfBuzzFont_(NULL),
+    variations_(NULL),
     defaultWidth_(100), defaultWeight_(400), italicAngle_(0) {
   FT_Error error =
-      FT_New_Face(freeTypeLibrary_, filepath.c_str(), index, &ft_face_);
+      FT_New_Face(freeTypeLibrary_, filepath.c_str(), index,
+                  &defaultInstance_.freeTypeFace);
   if (error) {
     fprintf(stderr, "cannot load font from %s\n", filepath.c_str());
     exit(2);
   }
 
-  harfBuzzFont_ = hb_ft_font_create(ft_face_, NULL);
-  hb_ft_font_set_load_flags(harfBuzzFont_, FT_LOAD_NO_HINTING);
-
-  FT_Face face = ft_face_;
-  cairo_face_ =
-      cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING);
+  FT_Face face = defaultInstance_.freeTypeFace;
   if (FT_HAS_MULTIPLE_MASTERS(face)) {
-    FT_Get_MM_Var(face, &ft_variations_);
+    FT_Get_MM_Var(face, &variations_);
   }
+
+  defaultInstance_.harfBuzzFont = hb_ft_font_create(face, NULL);
+  hb_ft_font_set_load_flags(defaultInstance_.harfBuzzFont, FT_LOAD_NO_HINTING);
+  defaultInstance_.cairoFace =
+      cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING);
 
   TT_OS2* os2 = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face, ft_sfnt_os2));
   if (os2) {
@@ -101,9 +102,9 @@ Font::Font(const std::string& filepath, int index)
     italicAngle_ = post->italicAngle;
   }
 
-  if (ft_variations_) {
-    for (int i = 0; i < ft_variations_->num_axis; ++i) {
-      const FT_Var_Axis& axis = ft_variations_->axis[i];
+  if (variations_) {
+    for (int i = 0; i < variations_->num_axis; ++i) {
+      const FT_Var_Axis& axis = variations_->axis[i];
       const double defaultValue = axis.def / (double) (1 << 16);
       const double minValue = axis.minimum / (double) (1 << 16);
       const double maxValue = axis.maximum / (double) (1 << 16);
@@ -122,33 +123,39 @@ Font::Font(const std::string& filepath, int index)
 
 
 Font::~Font() {
-  if (ft_variations_) {
-    free(ft_variations_);
+  if (variations_) {
+    free(variations_);
   }
-  if (harfBuzzFont_) {
-    hb_font_destroy(harfBuzzFont_);
+  if (defaultInstance_.harfBuzzFont) {
+    hb_font_destroy(defaultInstance_.harfBuzzFont);
   }
-  if (ft_face_) {
-    FT_Done_Face(ft_face_);
+  if (defaultInstance_.freeTypeFace) {
+    FT_Done_Face(defaultInstance_.freeTypeFace);
   }
 }
 
 
 FT_Face Font::GetFreeTypeFace(
     double weight, double width, double opticalSize) const {
-  return ft_face_;
+  return GetInstance(weight, width, opticalSize)->freeTypeFace;
 }
 
 
 hb_font_t* Font::GetHarfBuzzFont(
     double weight, double width, double opticalSize) const {
-  return harfBuzzFont_;
+  return GetInstance(weight, width, opticalSize)->harfBuzzFont;
 }
 
 
 cairo_font_face_t* Font::GetCairoFace(
     double weight, double width, double opticalSize) const {
-  return cairo_face_;
+  return GetInstance(weight, width, opticalSize)->cairoFace;
+}
+
+
+const Font::Instance* Font::GetInstance(
+    double weight, double width, double opticalSize) const {
+  return &defaultInstance_;
 }
 
 
@@ -216,7 +223,7 @@ double Font::GetWidthDistance(double width) const {
 }
 
 bool Font::IsCovering(uint32_t codepoint) const {
-  return FT_Get_Char_Index(ft_face_, codepoint) != 0;
+  return FT_Get_Char_Index(defaultInstance_.freeTypeFace, codepoint) != 0;
 }
 
 }  // namespace fontdiff
