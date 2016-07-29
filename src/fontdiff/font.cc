@@ -155,7 +155,55 @@ cairo_font_face_t* Font::GetCairoFace(
 
 const Font::Instance* Font::GetInstance(
     double weight, double width, double opticalSize) const {
-  return &defaultInstance_;
+  InstanceKey key;
+  if (!GetInstanceKey(weight, width, opticalSize, &key)) {
+    return &defaultInstance_;
+  }
+
+  auto ins = instances_.insert(std::make_pair(key, (Instance*) NULL));
+  if (ins.second) {
+    Instance* instance = new Instance();
+    instance->freeTypeFace = NULL;
+    instance->harfBuzzFont = NULL;
+    instance->cairoFace = NULL;
+    ins.first->second = instance;
+
+    if (FT_New_Face(freeTypeLibrary_, filepath_.c_str(), fontIndex_,
+                    &instance->freeTypeFace) ||
+        FT_Set_Var_Design_Coordinates(instance->freeTypeFace,
+                                      key.coords.size(),
+                                      &key.coords[0])) {
+      fprintf(stderr, "could not create font instance from %s\n",
+              filepath_.c_str());
+      exit(2);
+    }
+
+    instance->harfBuzzFont = hb_ft_font_create(instance->freeTypeFace, NULL);
+    hb_ft_font_set_load_flags(instance->harfBuzzFont, FT_LOAD_NO_HINTING);
+    instance->cairoFace =
+        cairo_ft_font_face_create_for_ft_face(instance->freeTypeFace,
+                                              FT_LOAD_NO_HINTING);
+  }
+  return ins.first->second;
+}
+
+
+bool Font::GetInstanceKey(
+    double weight, double width, double opticalSize,
+    InstanceKey* key) const {
+  key->coords.clear();
+  if (!variations_) {
+    return false;
+  }
+
+  key->coords.reserve(variations_->num_axis);
+  for (int i = 0; i < variations_->num_axis; ++i) {
+    const FT_Var_Axis& axis = variations_->axis[i];
+    FT_Fixed value = axis.def;  // TODO: Find proper value.
+    key->coords.push_back(value);
+  }
+
+  return true;
 }
 
 

@@ -18,6 +18,7 @@
 #define FONTDIFF_FONT_H_
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <ft2build.h>
@@ -59,15 +60,44 @@ class Font {
     cairo_font_face_t* cairoFace;
   };
 
+  struct InstanceKey {
+    std::vector<FT_Fixed> coords;
+    bool operator ==(const InstanceKey& other) const {
+      return this->coords == other.coords;
+    }
+  };
+
+  struct InstanceKeyHasher {
+    std::size_t operator()(const InstanceKey& key) const {
+      // https://en.wikipedia.org/wiki/Jenkins_hash_function
+      std::size_t result = 0;
+      for (const FT_Fixed coord : key.coords) {
+	result += static_cast<std::size_t>(coord);
+	result += (result << 10);
+	result ^= (result >> 6);
+      }
+      result += (result << 3);
+      result ^= (result >> 11);
+      result += (result << 15);
+      return result;
+    }
+  };
+
   Font(const std::string& filepath, int index);
 
   const Instance* GetInstance(
       double weight, double width, double opticalSize) const;
 
+  bool GetInstanceKey(
+      double weight, double width, double opticalSize,
+      InstanceKey* key) const;
+
   const std::string filepath_;
   const int fontIndex_;
   FT_MM_Var* variations_;
   Instance defaultInstance_;
+  mutable std::unordered_map<InstanceKey, Instance*, InstanceKeyHasher>
+      instances_;
 
   double minWidth_, defaultWidth_, maxWidth_;     // 50..200
   double minWeight_, defaultWeight_, maxWeight_;  // 100..1000
