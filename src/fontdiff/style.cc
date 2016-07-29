@@ -51,7 +51,8 @@ Style::Style(const Style* parent, const Language* language,
 	     const std::string& spec)
   : language_(language),
     fontSize_(parent ? parent->fontSize_ : 12.0),
-    fontWeight_(parent ? parent->fontWeight_ : 400) {
+    fontWeight_(parent ? parent->fontWeight_ : 400.0),
+    fontWidth_(parent ? parent->fontWidth_ : 100.0) {
   std::vector<std::string> specItems;
   SplitString(spec, ';', &specItems);
   for (const std::string item : specItems) {
@@ -74,7 +75,7 @@ double Style::GetFontScore(const Font& font) const {
   // TODO: Implement properly, based on style specification.
   double delta = 0;
   delta += font.GetWeightDistance(fontWeight_);
-  delta += font.GetWidthDistance(100.0);
+  delta += font.GetWidthDistance(fontWidth_);
   if (font.GetItalicAngle() != 0) {
     delta += 50;
   }
@@ -131,18 +132,53 @@ void Style::SetProperty(const std::string& key, const std::string& value) {
       SetFontWeight(std::atof(value.c_str()));
     }
   }
+
+  // https://www.w3.org/TR/css-fonts-3/#font-stretch-prop
+  // https://www.microsoft.com/typography/otspec/os2.htm#wdc
+  if (key == "font-stretch") {
+    if (value == "ultra-condensed") {
+      SetFontWidth(50.0);
+    } else if (value == "extra-condensed") {
+      SetFontWidth(62.5);
+    } else if (value == "condensed") {
+      SetFontWidth(75.0);
+    } else if (value == "semi-condensed") {
+      SetFontWidth(87.5);
+    } else if (value == "normal") {
+      SetFontWidth(100);
+    } else if (value == "semi-expanded") {
+      SetFontWidth(112.5);
+    } else if (value == "expanded") {
+      SetFontWidth(125.0);
+    } else if (value == "extra-expanded") {
+      SetFontWidth(150.0);
+    } else if (value == "ultra-expanded") {
+      SetFontWidth(200);
+    }
+  }
+}
+
+static double clamp(double value, double min, double max) {
+  if (value < min) {
+    return min;
+  } else if (value > max) {
+    return max;
+  } else {
+    return value;
+  }
 }
 
 void Style::SetFontSize(double size) {
-  if (size > 0 && size < 500) {
-    fontSize_ = size;
-  }
+  fontSize_ = clamp(size, 0.1, 500.0);
 }
 
 void Style::SetFontWeight(double weight) {
-  if (weight >= 100 && weight <= 900) {
-    fontWeight_ = weight;
-  }
+  fontWeight_ = clamp(weight, 100.0, 1000.0);
 }
+
+void Style::SetFontWidth(double width) {
+  fontWidth_ = clamp(width, 50.0, 200.0);
+}
+
 
 }  // namespace fontdiff
