@@ -33,9 +33,6 @@ class Font {
   static std::vector<Font*>* Load(const std::string& path);
   ~Font();
 
-  const std::string& GetPostScriptName() const { return psname_; }
-  const std::string& GetFamily() const { return family_; }
-  const std::string& GetStyle() const { return style_; }
   double GetWeightDistance(double weight) const;
   double GetWidthDistance(double width) const;
   FT_Fixed GetItalicAngle() const { return italicAngle_; }
@@ -55,9 +52,6 @@ class Font {
   FT_MM_Var* ft_variations_;
 
   cairo_font_face_t* cairo_face_;
-  std::string psname_;
-  std::string family_;
-  std::string style_;
   double minWidth_, defaultWidth_, maxWidth_;     // 50..200
   double minWeight_, defaultWeight_, maxWeight_;  // 100..1000
   FT_Fixed italicAngle_;

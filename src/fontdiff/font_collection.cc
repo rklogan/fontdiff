@@ -44,12 +44,7 @@ const Font* FontCollection::FindFont(UChar32 codepoint, const Style* style,
       }
     }
   }
-  if (false) {
-    printf("font change; codepoint: U+%04X curFont: %s result: %s\n",
-	   codepoint,
-	   curFont ? curFont->GetPostScriptName().c_str() : "null",
-	   bestFont ? bestFont->GetPostScriptName().c_str() : "null");
-  }
+
   return bestFont;
 }
 

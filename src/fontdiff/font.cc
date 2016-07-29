@@ -71,22 +71,8 @@ Font::Font(const std::string& filepath, int index)
   FT_Error error =
       FT_New_Face(freeTypeLibrary_, filepath.c_str(), index, &ft_face_);
   FT_Face face = ft_face_;
-  family_ = face->family_name;
-  style_ = face->style_name;
   cairo_face_ =
       cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING);
-  const char* psname = FT_Get_Postscript_Name(ft_face_);
-  if (psname) {
-    psname_ = psname;
-  }
-  if (family_.find("Noto Sans ") == 0 &&
-      family_ != "Noto Sans Mono") {
-    family_ = "Noto Sans";
-  }
-  if (family_.find("Noto Serif ") == 0) {
-    family_ = "Noto Serif";
-  }
-
   if (FT_HAS_MULTIPLE_MASTERS(face)) {
     FT_Get_MM_Var(face, &ft_variations_);
   }
