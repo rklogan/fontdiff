@@ -25,7 +25,6 @@
 #include <unicode/stringpiece.h>
 
 #include "fontdiff/font_loader.h"
-#include "fontdiff/style_key.h"
 
 namespace fontdiff {
 
