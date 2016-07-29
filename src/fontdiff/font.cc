@@ -30,9 +30,9 @@ namespace fontdiff {
 static FT_Library freeTypeLibrary_ = NULL;
 static bool freeTypeLibraryInited_ = false;
 
-FT_ULong Font::weightAxisTag = FT_MAKE_TAG('w', 'g', 'h', 't');
-FT_ULong Font::widthAxisTag = FT_MAKE_TAG('w', 'd', 't', 'h');
-FT_ULong Font::opticalSizeAxisTag = FT_MAKE_TAG('o', 'p', 's', 'z');
+const FT_ULong Font::weightAxisTag = FT_MAKE_TAG('w', 'g', 'h', 't');
+const FT_ULong Font::widthAxisTag = FT_MAKE_TAG('w', 'd', 't', 'h');
+const FT_ULong Font::opticalSizeAxisTag = FT_MAKE_TAG('o', 'p', 's', 'z');
 
 std::vector<Font*>* Font::Load(const std::string& path) {
   if (!freeTypeLibraryInited_) {

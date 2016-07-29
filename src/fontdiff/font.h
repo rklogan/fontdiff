@@ -44,7 +44,7 @@ class Font {
   cairo_font_face_t* GetCairoFace() const { return cairo_face_; }
 
  private:
-  static FT_ULong weightAxisTag, widthAxisTag, opticalSizeAxisTag;
+  static const FT_ULong weightAxisTag, widthAxisTag, opticalSizeAxisTag;
   static double MapWeightClass(FT_UShort weightClass);
   static double MapWidthClass(FT_UShort widthClass);
   Font(const std::string& filepath, int index);
