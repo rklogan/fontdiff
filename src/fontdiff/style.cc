@@ -70,10 +70,11 @@ Style::Style(const Style* parent, const Language* language,
 Style::~Style() {
 }
 
-int32_t Style::GetFontScore(const Font& font) const {
+double Style::GetFontScore(const Font& font) const {
   // TODO: Implement properly, based on style specification.
-  int32_t delta = 0;
-  delta += std::abs(font.GetWeight() - static_cast<int32_t>(fontWeight_));
+  double delta = 0;
+  delta += font.GetWeightDistance(fontWeight_);
+  delta += font.GetWidthDistance(100.0);
   if (font.GetItalicAngle() != 0) {
     delta += 50;
   }

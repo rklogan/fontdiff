@@ -32,7 +32,7 @@ class Style {
   const Language* GetLanguage() const { return language_; }
   double GetFontSize() const { return fontSize_; }
   double GetFontWeight() const { return fontWeight_; }
-  int32_t GetFontScore(const Font& font) const;
+  double GetFontScore(const Font& font) const;
 
  private:
   void SetProperty(const std::string& key, const std::string& value);
@@ -41,7 +41,7 @@ class Style {
 
   const Language* language_;
   double fontSize_;
-  double fontWeight_;  // 100..900
+  double fontWeight_;  // 100..1000
 };
 
 }  // namespace fontdiff

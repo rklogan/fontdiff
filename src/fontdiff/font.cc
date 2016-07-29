@@ -16,7 +16,9 @@
 
 #include <ft2build.h>
 #include FT_GLYPH_H
+#include FT_MULTIPLE_MASTERS_H
 #include FT_TRUETYPE_TABLES_H
+#include FT_TYPES_H
 
 #include "cairo.h"
 #include "cairo-ft.h"
@@ -27,6 +29,10 @@ namespace fontdiff {
 
 static FT_Library freeTypeLibrary_ = NULL;
 static bool freeTypeLibraryInited_ = false;
+
+FT_ULong Font::weightAxisTag = FT_MAKE_TAG('w', 'g', 'h', 't');
+FT_ULong Font::widthAxisTag = FT_MAKE_TAG('w', 'd', 't', 'h');
+FT_ULong Font::opticalSizeAxisTag = FT_MAKE_TAG('o', 'p', 's', 'z');
 
 std::vector<Font*>* Font::Load(const std::string& path) {
   if (!freeTypeLibraryInited_) {
@@ -65,11 +71,12 @@ std::vector<Font*>* Font::Load(const std::string& path) {
 
 Font::Font(FT_Face face)
   : ft_face_(face),
+    ft_variations_(NULL),
     cairo_face_(
         cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING)),
     family_(face->family_name),
     style_(face->style_name),
-    width_(5), weight_(400), italicAngle_(0) {
+    defaultWidth_(100), defaultWeight_(400), italicAngle_(0) {
   const char* psname = FT_Get_Postscript_Name(ft_face_);
   if (psname) {
     psname_ = psname;
@@ -82,27 +89,54 @@ Font::Font(FT_Face face)
     family_ = "Noto Serif";
   }
 
+  if (FT_HAS_MULTIPLE_MASTERS(face)) {
+    FT_Get_MM_Var(face, &ft_variations_);
+  }
+
   TT_OS2* os2 = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face, ft_sfnt_os2));
   if (os2) {
-    width_ = os2->usWidthClass;
-    weight_ = MapWeightClass(os2->usWeightClass);
+    defaultWidth_ = MapWidthClass(os2->usWidthClass);
+    defaultWeight_ = MapWeightClass(os2->usWeightClass);
   }
+  minWidth_ = maxWidth_ = defaultWidth_;
+  minWeight_ = maxWeight_ = defaultWeight_;
 
   TT_Postscript* post =
       static_cast<TT_Postscript*>(FT_Get_Sfnt_Table(face, ft_sfnt_post));
   if (post) {
     italicAngle_ = post->italicAngle;
   }
+
+  if (ft_variations_) {
+    for (int i = 0; i < ft_variations_->num_axis; ++i) {
+      const FT_Var_Axis& axis = ft_variations_->axis[i];
+      const double defaultValue = axis.def / (double) (1 << 16);
+      const double minValue = axis.minimum / (double) (1 << 16);
+      const double maxValue = axis.maximum / (double) (1 << 16);
+      const double minMultiplier = minValue / defaultValue;
+      const double maxMultiplier = maxValue / defaultValue;
+      if (axis.tag == weightAxisTag) {
+        minWeight_ = minMultiplier * defaultWeight_;
+        maxWeight_ = maxMultiplier * defaultWeight_;
+      } else if (axis.tag == widthAxisTag) {
+        minWidth_ = minMultiplier * defaultWidth_;
+        maxWidth_ = maxMultiplier * defaultWidth_;
+      }
+    }
+  }
 }
 
 
 Font::~Font() {
+  if (ft_variations_) {
+    free(ft_variations_);
+  }
 }
 
 
 // Work around values that can be found in OS/2 tables of some old fonts.
 // Logic taken from FontConfig.
-FT_UShort Font::MapWeightClass(FT_UShort weight) {
+double Font::MapWeightClass(FT_UShort weight) {
   if (weight <= 9) {
     switch (weight) {
     case 0: return 100;
@@ -124,6 +158,42 @@ FT_UShort Font::MapWeightClass(FT_UShort weight) {
     return 1000;
   } else {
     return weight;
+  }
+}
+
+double Font::MapWidthClass(FT_UShort widthClass) {
+  // https://www.microsoft.com/typography/otspec/os2.htm#wdc
+  switch (widthClass) {
+  case 1: return 50;
+  case 2: return 62.5;
+  case 3: return 75;
+  case 4: return 87.5;
+  case 5: return 100;
+  case 6: return 112.5;
+  case 7: return 125;
+  case 8: return 150;
+  case 9: return 200;
+  default: return 100;
+  }
+}
+
+double Font::GetWeightDistance(double weight) const {
+  if (weight < minWeight_) {
+    return minWeight_ - weight;
+  } else if (weight > maxWeight_) {
+    return weight - maxWeight_;
+  } else {
+    return 0;
+  }
+}
+
+double Font::GetWidthDistance(double width) const {
+  if (width < minWidth_) {
+    return minWidth_ - width;
+  } else if (width > maxWidth_) {
+    return width - maxWidth_;
+  } else {
+    return 0;
   }
 }
 
