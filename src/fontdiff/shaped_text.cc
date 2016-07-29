@@ -61,12 +61,14 @@ void ShapedText::Shape() {
     return;
   }
 
+  const double weight = style_->GetFontWeight();
+  const double width = style_->GetFontWidth();
   const double size = style_->GetFontSize();
-  FT_Face face = font_->GetFreeTypeFace();
+  FT_Face face = font_->GetFreeTypeFace(weight, width, size);
   FT_F26Dot6 textSize = static_cast<FT_F26Dot6>(size * 64);
   FT_Set_Char_Size(face, textSize, textSize, 72, 72);
 
-  hb_font_t* hbFont = font_->GetHarfBuzzFont();
+  hb_font_t* hbFont = font_->GetHarfBuzzFont(weight, width, size);
   hb_font_set_scale(hbFont, size * 64, size * 64);
 
   hb_font_extents_t extents;
@@ -194,8 +196,11 @@ void ShapedText::Render(int32_t start, int32_t limit, cairo_t* gc,
     cairoClusters.push_back(finalCluster);
   }
 
-  cairo_set_font_face(gc, font_->GetCairoFace());
-  cairo_set_font_size(gc, style_->GetFontSize());
+  const double weight = style_->GetFontWeight();
+  const double width = style_->GetFontWidth();
+  const double size = style_->GetFontSize();
+  cairo_set_font_face(gc, font_->GetCairoFace(weight, width, size));
+  cairo_set_font_size(gc, size);
   if (cairoClusters.size() > 0) {
     cairo_show_text_glyphs(gc, utf8.c_str(), utf8.size(),
 			   &cairoGlyphs.front(), cairoGlyphs.size(),

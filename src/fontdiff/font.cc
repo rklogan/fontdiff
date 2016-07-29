@@ -134,6 +134,24 @@ Font::~Font() {
 }
 
 
+FT_Face Font::GetFreeTypeFace(
+    double weight, double width, double opticalSize) const {
+  return ft_face_;
+}
+
+
+hb_font_t* Font::GetHarfBuzzFont(
+    double weight, double width, double opticalSize) const {
+  return harfBuzzFont_;
+}
+
+
+cairo_font_face_t* Font::GetCairoFace(
+    double weight, double width, double opticalSize) const {
+  return cairo_face_;
+}
+
+
 // Work around values that can be found in OS/2 tables of some old fonts.
 // Logic taken from FontConfig.
 double Font::MapWeightClass(FT_UShort weight) {

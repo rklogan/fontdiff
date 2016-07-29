@@ -39,9 +39,14 @@ class Font {
   FT_Fixed GetItalicAngle() const { return italicAngle_; }
   bool IsCovering(uint32_t codepoint) const;
 
-  FT_Face GetFreeTypeFace() const { return ft_face_; }
-  hb_font_t* GetHarfBuzzFont() const { return harfBuzzFont_; }
-  cairo_font_face_t* GetCairoFace() const { return cairo_face_; }
+  FT_Face GetFreeTypeFace(
+      double weight, double width, double opticalSize) const;
+
+  hb_font_t* GetHarfBuzzFont(
+      double weight, double width, double opticalSize) const;
+
+  cairo_font_face_t* GetCairoFace(
+      double weight, double width, double opticalSize) const;
 
  private:
   static const FT_ULong weightAxisTag, widthAxisTag, opticalSizeAxisTag;
