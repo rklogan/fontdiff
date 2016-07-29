@@ -60,16 +60,22 @@ void ShapedText::Shape() {
   if (!font_ || !style_) {
     return;
   }
-  FT_Face face = font_->GetFreetypeFace();
-  FT_F26Dot6 textSize = static_cast<FT_F26Dot6>(style_->GetFontSize() * 64);
+
+  const double size = style_->GetFontSize();
+  FT_Face face = font_->GetFreeTypeFace();
+  FT_F26Dot6 textSize = static_cast<FT_F26Dot6>(size * 64);
   FT_Set_Char_Size(face, textSize, textSize, 72, 72);
-  // TODO: Take ascender and descender from the OpenType BASE table if present.
-  ascender_ = face->size->metrics.ascender;
-  descender_ = face->size->metrics.descender;
-  hb_font_t* hbFont = hb_ft_font_create(face, NULL);
-  // TODO: hb_ft_font_set_load_flags(hbFont, FT_LOAD_NO_HINTING);
+
+  hb_font_t* hbFont = font_->GetHarfBuzzFont();
+  hb_font_set_scale(hbFont, size * 64, size * 64);
+
+  hb_font_extents_t extents;
+  hb_font_get_extents_for_direction(
+      hbFont, hb_buffer_get_direction(hb_buffer_), &extents);
+  ascender_ = extents.ascender;
+  descender_ = extents.descender;
+
   hb_shape(hbFont, hb_buffer_, NULL, 0);
-  hb_font_destroy(hbFont);
 }
 
 FT_F26Dot6 ShapedText::GetXAdvance(int32_t start, int32_t limit) const {

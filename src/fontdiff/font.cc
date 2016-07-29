@@ -22,6 +22,8 @@
 
 #include "cairo.h"
 #include "cairo-ft.h"
+#include "hb.h"
+#include "hb-ft.h"
 
 #include "fontdiff/font.h"
 
@@ -66,10 +68,18 @@ std::vector<Font*>* Font::Load(const std::string& path) {
 
 Font::Font(const std::string& filepath, int index)
   : filepath_(filepath), fontIndex_(index),
-    ft_face_(NULL), ft_variations_(NULL),
+    ft_face_(NULL), ft_variations_(NULL), harfBuzzFont_(NULL),
     defaultWidth_(100), defaultWeight_(400), italicAngle_(0) {
   FT_Error error =
       FT_New_Face(freeTypeLibrary_, filepath.c_str(), index, &ft_face_);
+  if (error) {
+    fprintf(stderr, "cannot load font from %s\n", filepath.c_str());
+    exit(2);
+  }
+
+  harfBuzzFont_ = hb_ft_font_create(ft_face_, NULL);
+  hb_ft_font_set_load_flags(harfBuzzFont_, FT_LOAD_NO_HINTING);
+
   FT_Face face = ft_face_;
   cairo_face_ =
       cairo_ft_font_face_create_for_ft_face(face, FT_LOAD_NO_HINTING);
@@ -114,6 +124,9 @@ Font::Font(const std::string& filepath, int index)
 Font::~Font() {
   if (ft_variations_) {
     free(ft_variations_);
+  }
+  if (harfBuzzFont_) {
+    hb_font_destroy(harfBuzzFont_);
   }
   if (ft_face_) {
     FT_Done_Face(ft_face_);

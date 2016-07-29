@@ -25,6 +25,7 @@
 #include FT_MULTIPLE_MASTERS_H
 
 typedef struct _cairo_font_face cairo_font_face_t;
+typedef struct hb_font_t hb_font_t;
 
 namespace fontdiff {
 
@@ -37,7 +38,9 @@ class Font {
   double GetWidthDistance(double width) const;
   FT_Fixed GetItalicAngle() const { return italicAngle_; }
   bool IsCovering(uint32_t codepoint) const;
-  FT_Face GetFreetypeFace() const { return ft_face_; }
+
+  FT_Face GetFreeTypeFace() const { return ft_face_; }
+  hb_font_t* GetHarfBuzzFont() const { return harfBuzzFont_; }
   cairo_font_face_t* GetCairoFace() const { return cairo_face_; }
 
  private:
@@ -51,6 +54,7 @@ class Font {
   FT_Face ft_face_;
   FT_MM_Var* ft_variations_;
 
+  hb_font_t* harfBuzzFont_;
   cairo_font_face_t* cairo_face_;
   double minWidth_, defaultWidth_, maxWidth_;     // 50..200
   double minWeight_, defaultWeight_, maxWeight_;  // 100..1000
