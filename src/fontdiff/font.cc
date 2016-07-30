@@ -66,6 +66,29 @@ std::vector<Font*>* Font::Load(const std::string& path) {
   }
 }
 
+
+static double clamp(double value, double min, double max) {
+  if (value < min) {
+    return min;
+  } else if (value > max) {
+    return max;
+  } else {
+    return value;
+  }
+}
+
+
+static double clampFixed(FT_Fixed value, FT_Fixed min, FT_Fixed max) {
+  if (value < min) {
+    return min;
+  } else if (value > max) {
+    return max;
+  } else {
+    return value;
+  }
+}
+
+
 Font::Font(const std::string& filepath, int index)
   : filepath_(filepath), fontIndex_(index),
     variations_(NULL),
@@ -105,17 +128,24 @@ Font::Font(const std::string& filepath, int index)
   if (variations_) {
     for (int i = 0; i < variations_->num_axis; ++i) {
       const FT_Var_Axis& axis = variations_->axis[i];
-      const double defaultValue = axis.def / (double) (1 << 16);
-      const double minValue = axis.minimum / (double) (1 << 16);
-      const double maxValue = axis.maximum / (double) (1 << 16);
-      const double minMultiplier = minValue / defaultValue;
-      const double maxMultiplier = maxValue / defaultValue;
       if (axis.tag == weightAxisTag) {
-        minWeight_ = minMultiplier * defaultWeight_;
-        maxWeight_ = maxMultiplier * defaultWeight_;
+	// Legacy Skia.ttf goes from 0.48=Light[300] to 3.2=Black[900].
+	if (axis.minimum == 0x7ae1 && axis.maximum == 0x33333) {
+	  minWeight_ = 300;
+	  maxWeight_ = 900;
+	} else {
+	  minWeight_ = clamp(axis.minimum / 65536.0, 1, 1000);
+	  maxWeight_ = clamp(axis.maximum / 65536.0, 1, 1000);
+	}
       } else if (axis.tag == widthAxisTag) {
-        minWidth_ = minMultiplier * defaultWidth_;
-        maxWidth_ = maxMultiplier * defaultWidth_;
+	// Legacy Skia.ttf goes from Condensed[75] to Expanded[125].
+	if (axis.minimum == 0x9eb7 && axis.maximum == 0x14ccc) {
+	  minWidth_ = 75;
+	  maxWidth_ = 125;
+	} else {
+	  minWeight_ = clamp(axis.minimum / 65536.0, 1, 1000);
+	  maxWeight_ = clamp(axis.maximum / 65536.0, 1, 1000);
+	}
       }
     }
   }
@@ -188,6 +218,24 @@ const Font::Instance* Font::GetInstance(
 }
 
 
+static FT_Fixed MapLegacySkiaWeight(double weight) {
+  weight = clamp(weight, 300, 900);
+  if (weight <= 400) {
+    return static_cast<FT_Fixed>(
+      (0.48 + 0.52 * (weight - 300) / 100) * 65535 + 0.5);
+  } else {
+    return static_cast<FT_Fixed>(
+      (1.0 + 2.2 * (weight - 400) / 500) * 65536 + 0.5);
+  }
+}
+
+
+static FT_Fixed MapLegacySkiaWidth(double width) {
+  width = clamp(width, 75, 125);
+  const double d = 0.7 + 0.6 * (width - 75) / 50;
+  return static_cast<FT_Fixed>(d * 65536 + 0.5);
+}
+
 bool Font::GetInstanceKey(
     double weight, double width, double opticalSize,
     InstanceKey* key) const {
@@ -196,11 +244,31 @@ bool Font::GetInstanceKey(
     return false;
   }
 
+  weight = clamp(weight, minWeight_, maxWeight_);
+  width = clamp(width, minWidth_, maxWidth_);
+
   key->coords.reserve(variations_->num_axis);
   for (int i = 0; i < variations_->num_axis; ++i) {
     const FT_Var_Axis& axis = variations_->axis[i];
-    FT_Fixed value = axis.def;  // TODO: Find proper value.
-    key->coords.push_back(value);
+    FT_Fixed value = axis.def;
+    if (axis.tag == weightAxisTag) {
+      // Legacy Skia.ttf goes from 0.48=Light[300] to 3.2=Black[900].
+      if (axis.minimum == 0x7ae1 && axis.maximum == 0x33333) {
+	value = MapLegacySkiaWeight(weight);
+      } else {
+        value = static_cast<FT_Fixed>(weight * 65536 + 0.5);
+      }
+    } else if (axis.tag == widthAxisTag) {
+      // Legacy Skia.ttf goes from 0.7=Condensed[75] to 1.3=Expanded[125].
+      if (axis.minimum == 0x9eb7 && axis.maximum == 0x14ccc) {
+	value = MapLegacySkiaWidth(width);
+      } else {
+	value = static_cast<FT_Fixed>(width * 65536 + 0.5);
+      }
+    } else if (axis.tag == opticalSizeAxisTag) {
+      value = static_cast<FT_Fixed>(opticalSize * 65536 + 0.5);
+    }
+    key->coords.push_back(clampFixed(value, axis.minimum, axis.maximum));
   }
 
   return true;
