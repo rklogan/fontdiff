@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/googlei18n/fontdiff.svg)](https://travis-ci.org/googlei18n/fontdiff)
+
 # fontdiff
 
 `fontdiff` is a utility for testing fonts. When you modify a TrueType
