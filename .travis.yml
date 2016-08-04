@@ -13,3 +13,16 @@ install:
   - make --directory build
 
 script: true
+
+before_deploy:
+  - mkdir fontdiff-$TRAVIS_OS_NAME
+  - cp build/out/Default/fontdiff LICENSE.md fontdiff-$TRAVIS_OS_NAME
+  - zip -r fontdiff-$TRAVIS_OS_NAME.zip fontdiff-$TRAVIS_OS_NAME
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Dv95CWEYzj15dvduGztrKA1++wcIZ4mUZ8L5lSC2TKd4mKlhFVFGBcdeL2CmeB7f3gwqHjLOit9LoFJx6tJc7TumMjHR9wfEPdexY+efCA8PQdUxlfZ3nwDUBVwgdMR3uVoOyfaKmaO3oWeM+XI35qU6+mN/UTx1eth1c5xhptkIliIK9G1DN8dSaNUDqwOMHnI2kPmHo2uqfsZFK8aAPQc/D7M7b8py0xr1j9GbmQmbHvw6u9GwUWt4H7vI+fqVpTytMTkzUFoHuBLDBzY2bjY4cIM9FX5cCCEX8oUky70gx1lmd1GpY+nIXORlaPHkDd5K58Mo9Q13XXsU7bYmp+caobWHDArdA2tVuDLNSELC4s0/EpdMVl4PRUuS/j5ES8yEbY9biJ4q8+ZszTNg4z7E588UhaDlJO/MbP9SoxOpat7dVmRWkaa6p2iBHiZvv4yf5njWTSyAm4Pr8c1qfsQcgaIm03gr5J5eJZXF9zBve4GANKKrJLPaCrKIV/XVntelcWNx0xb1PMWcd8Ay4lHEVQvhi2bYW6NT8DOJkE5543g6pWhbwtyl5TdUqe86pPJNYwX3NIdrUJnQD9Tf15IlMQr8lDFlAXB1MzO3LSufZYpYZ0ACfL5PVGvPmx9FguYffqdizF+Sk9B97J4qp9nq/x9ssn3o+PTloBKLhxE=
+  file: fontdiff-$TRAVIS_OS_NAME.zip
+  on:
+    repo: googlei18n/fontdiff
