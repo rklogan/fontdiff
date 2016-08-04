@@ -39,6 +39,9 @@ ArgumentParser::ArgumentParser(int argc, const char** argv) {
     } else if (!strcmp(arg, "--out")) {
       cur = OUT;
       continue;
+    } else if (!strcmp(arg, "--version")) {
+      ShowVersionAndExit();
+      continue;
     }
 
     if (argv[i][0] == '-') {
@@ -60,6 +63,22 @@ ArgumentParser::ArgumentParser(int argc, const char** argv) {
 }
 
 ArgumentParser::~ArgumentParser() {
+}
+
+void ArgumentParser::ShowVersionAndExit() {
+#ifndef FONTDIFF_VERSION
+#define FONTDIFF_VERSION 0
+#endif
+#define VERSION_str(s) #s
+#define VERSION_xstr(s) VERSION_str(s)
+
+  const char* version = VERSION_xstr(FONTDIFF_VERSION);
+
+  if (!version || *version == '\0' || !strcmp(version, "0")) {
+    version = "(unreleased development version)";
+  }
+  printf("fontdiff %s\n", version);
+  exit(0);
 }
 
 void ArgumentParser::ExplainUsageAndExit(const char* programName) {

@@ -62,6 +62,9 @@
             'include_dirs': [
                 '..',
             ],
+            'defines': [
+                'FONTDIFF_VERSION=' + '<!(echo $FONTDIFF_VERSION)',
+            ],
             'dependencies': [
                 '../third_party/cairo/cairo.gyp:cairo',
                 '../third_party/dtl/dtl.gyp:dtl',

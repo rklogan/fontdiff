@@ -32,6 +32,7 @@ class ArgumentParser {
   const std::string& output() const { return output_; }
 
  private:
+  void ShowVersionAndExit();
   void ExplainUsageAndExit(const char* programName);
 
   std::vector<std::string> beforeFonts_, afterFonts_;
