@@ -107,6 +107,8 @@ void LineDiffer::ComputeHash(unsigned const char* data,
   for (size_t x = 0; x < imageWidth_; ++x) {
     uint32_t h = (*hash)[x];
     for (size_t y = 0; y < imageHeight_; ++y) {
+      // Diff images are black-and-white, 1 bit per pixex (Cairo surface format is A1)
+      // Get byte and bit offsets based on x coordinate.
       int byte_offset = x / 8;
       int bit_offset = x % 8;
       uint8_t val = (static_cast<int8_t>(data[y * imageStride_ + byte_offset]) >> bit_offset) & 1;
@@ -131,10 +133,10 @@ void LineDiffer::MergeRange(size_t start_idx, size_t end_idx,
   DeltaRange range;
   range.x = start_idx * render_scale_ / scale_;
   range.width = (end_idx - start_idx + 1) * render_scale_ / scale_;
-  if (ranges->size()) {
-    DeltaRange& prev = ranges->back();
-    if (range.x - prev.x - prev.width < merge_threshold_) {
-      prev.width = range.x + range.width - prev.x;
+  if (!ranges->empty()) {
+    DeltaRange *prev = &ranges->back();
+    if (range.x - prev->x - prev->width < merge_threshold_) {
+      prev->width = range.x + range.width - prev->x;
       return;
     }
   }
@@ -161,9 +163,8 @@ void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
       if (last_op != dtl::SES_COMMON) {
         MergeRange(start_idx, end_idx,
                    last_op == dtl::SES_ADD ? additions : removals);
-      } //else {
-        start_idx = position;
-      //}
+      }
+      start_idx = position;
       last_op = elem.second.type;
     }
     end_idx = position;
