@@ -32,10 +32,13 @@ class LineDiffer {
                  std::vector<DeltaRange>* additions) const;
 
  private:
-  bool IsImageColumnEqual(int x1, int x2) const;
   void ComputeHash(unsigned const char* data, std::vector<uint32_t>* hash);
+  void MergeRange(size_t start_idx, size_t end_idx,
+                  std::vector<DeltaRange>* ranges) const;
 
   static const int scale_;
+  static const int render_scale_;
+  static const int merge_threshold_;
   FT_F26Dot6 width_, height_;
   cairo_surface_t* beforeSurface_;
   cairo_surface_t* afterSurface_;
@@ -46,31 +49,34 @@ class LineDiffer {
 };
 
 const int LineDiffer::scale_ = 8;
+const int LineDiffer::render_scale_ = 64;
+const int LineDiffer::merge_threshold_ = 2 * render_scale_ / scale_;
 
 LineDiffer::LineDiffer(const Line* before, const Line* after) {
   width_ = std::max(before->GetWidth(), after->GetWidth());
   height_ = std::max(before->GetHeight(), after->GetHeight());
   beforeSurface_ =
       cairo_image_surface_create(CAIRO_FORMAT_A1,
-                                 (width_ * scale_) / 64,
-                                 (height_ * scale_) / 64);
+                                 (width_ * scale_) / render_scale_,
+                                 (height_ * scale_) / render_scale_);
   afterSurface_ =
       cairo_image_surface_create(CAIRO_FORMAT_A1,
-                                 (width_ * scale_) / 64,
-                                 (height_ * scale_) / 64);
-  cairo_t* beforeGC = cairo_create(beforeSurface_);
-  cairo_t* afterGC = cairo_create(afterSurface_);
-  cairo_scale(beforeGC, scale_, scale_);
-  cairo_scale(afterGC, scale_, scale_);
-  before->Render(beforeGC, 0, 0);
-  after->Render(afterGC, 0, 0);
-  cairo_destroy(beforeGC);
-  cairo_destroy(afterGC);
-  cairo_surface_flush(beforeSurface_);
-  cairo_surface_flush(afterSurface_);
+                                 (width_ * scale_) / render_scale_,
+                                 (height_ * scale_) / render_scale_);
 
+  cairo_t* beforeGC = cairo_create(beforeSurface_);
+  cairo_scale(beforeGC, scale_, scale_);
+  before->Render(beforeGC, 0, 0);
+  cairo_surface_flush(beforeSurface_);
+  cairo_destroy(beforeGC);
   beforeData_ = cairo_image_surface_get_data(beforeSurface_);
+
+  cairo_t* afterGC = cairo_create(afterSurface_);
+  cairo_scale(afterGC, scale_, scale_);
+  after->Render(afterGC, 0, 0);
+  cairo_surface_flush(afterSurface_);
   afterData_ = cairo_image_surface_get_data(afterSurface_);
+  cairo_destroy(afterGC);
 
   imageWidth_ =
       static_cast<size_t>(cairo_image_surface_get_width(beforeSurface_));
@@ -79,8 +85,19 @@ LineDiffer::LineDiffer(const Line* before, const Line* after) {
   imageStride_ =
       static_cast<size_t>(cairo_image_surface_get_stride(beforeSurface_));
 
-  ComputeHash(beforeData_, &beforeHash_);
-  ComputeHash(afterData_, &afterHash_);
+  // Only compute hashes if image data differs.
+  if (memcmp(beforeData_, afterData_, imageStride_ * imageHeight_)) {
+    ComputeHash(beforeData_, &beforeHash_);
+    ComputeHash(afterData_, &afterHash_);
+  }
+
+  // Hack: For some reason (cairo internals?) cairo scaling does not work
+  // correctly without this additional rendering.
+  // TODO: Remove this workaround once better solution found.
+  cairo_t* tempGC = cairo_create(beforeSurface_);
+  before->Render(tempGC, 0, 0);
+  after->Render(tempGC, 0, 0);
+  cairo_destroy(tempGC);
 }
 
 void LineDiffer::ComputeHash(unsigned const char* data,
@@ -90,7 +107,10 @@ void LineDiffer::ComputeHash(unsigned const char* data,
   for (size_t x = 0; x < imageWidth_; ++x) {
     uint32_t h = (*hash)[x];
     for (size_t y = 0; y < imageHeight_; ++y) {
-      h += static_cast<int8_t>(data[y * imageStride_ + x]);
+      int byte_offset = x / 8;
+      int bit_offset = x % 8;
+      uint8_t val = (static_cast<int8_t>(data[y * imageStride_ + byte_offset]) >> bit_offset) & 1;
+      h += val;
       h += (h << 10);
       h ^= (h >> 6);
     }
@@ -106,45 +126,54 @@ LineDiffer::~LineDiffer() {
   cairo_surface_destroy(afterSurface_);
 }
 
-void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
-                           std::vector<DeltaRange>* additions) const {
-  removals->clear();
-  additions->clear();
-  if (memcmp(beforeData_, afterData_, imageStride_ * imageHeight_) == 0) {
-    return;
+void LineDiffer::MergeRange(size_t start_idx, size_t end_idx,
+                            std::vector<DeltaRange>* ranges) const {
+  DeltaRange range;
+  range.x = start_idx * render_scale_ / scale_;
+  range.width = (end_idx - start_idx + 1) * render_scale_ / scale_;
+  if (ranges->size()) {
+    DeltaRange& prev = ranges->back();
+    if (range.x - prev.x - prev.width < merge_threshold_) {
+      prev.width = range.x + range.width - prev.x;
+      return;
+    }
   }
-
-  int x = 0;
-  for (x = 0; x < imageWidth_ && IsImageColumnEqual(x, x); ++x) {
-  }
-
-  DeltaRange r;
-  r.x = x * 512 / scale_;
-  r.width = width_ - r.x;
-  additions->push_back(r);
-  removals->push_back(r);
+  ranges->push_back(range);
 }
 
-bool LineDiffer::IsImageColumnEqual(int x1, int x2) const {
-  if (x1 < 0 || x1 >= imageWidth_ || x2 < 0 || x2 >= imageWidth_) {
-    return true;
-  }
-
-  if (beforeHash_[x1] != afterHash_[x2]) {
-    return false;
-  }
-
-  unsigned const char* a = beforeData_ + x1;
-  unsigned const char* b = afterData_ + x2;
-  unsigned const char* stop = a + (imageHeight_ * imageStride_);
-  while (a < stop) {
-    if (*a != *b) {
-      return false;
+void LineDiffer::FindDiffs(std::vector<DeltaRange>* removals,
+                           std::vector<DeltaRange>* additions) const {
+  size_t position = -1, start_idx = -1, end_idx = -1;
+  removals->clear();
+  additions->clear();
+  // Build shortest edit sequence and go through each element.
+  dtl::Diff<uint32_t> d(beforeHash_, afterHash_);
+  d.compose();
+  dtl::edit_t last_op = dtl::SES_COMMON;
+  for (const auto& elem : d.getSes().getSequence()) {
+    if (elem.second.type != dtl::SES_COMMON) {
+      position = (elem.second.type == dtl::SES_ADD)
+          ? elem.second.afterIdx : elem.second.beforeIdx;
     }
-    a += imageStride_;
-    b += imageStride_;
+    // Edit operation type changed. Merge ranges of Add or Remove
+    // operations if common chunk is reached.
+    if (elem.second.type != last_op) {
+      if (last_op != dtl::SES_COMMON) {
+        MergeRange(start_idx, end_idx,
+                   last_op == dtl::SES_ADD ? additions : removals);
+      } //else {
+        start_idx = position;
+      //}
+      last_op = elem.second.type;
+    }
+    end_idx = position;
   }
-  return true;
+
+  // If sequence ends with either Add or Remove, merge it.
+  if (last_op != dtl::SES_COMMON){
+    MergeRange(start_idx, end_idx,
+               last_op == dtl::SES_ADD ? additions : removals);
+  }
 }
 
 bool FindDeltas(const Line* before, const Line* after,
