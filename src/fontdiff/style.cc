@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -24,7 +25,7 @@
 namespace fontdiff {
 
 static void SplitString(const std::string& text, char sep,
-			std::vector<std::string>* result) {
+                        std::vector<std::string>* result) {
   std::size_t start = 0, limit = 0;
   while ((limit = text.find(sep, start)) != std::string::npos) {
     result->push_back(text.substr(start, limit - start));
@@ -48,11 +49,15 @@ void TrimWhitespace(std::string* str) {
 }
 
 Style::Style(const Style* parent, const Language* language,
-	     const std::string& spec)
+             const std::string& spec)
   : language_(language),
     fontSize_(parent ? parent->fontSize_ : 12.0),
     fontWeight_(parent ? parent->fontWeight_ : 400.0),
     fontWidth_(parent ? parent->fontWidth_ : 100.0) {
+  if (parent) {
+    fontFeatures_ = parent->fontFeatures_;
+  }
+
   std::vector<std::string> specItems;
   SplitString(spec, ';', &specItems);
   for (const std::string item : specItems) {
@@ -156,6 +161,14 @@ void Style::SetProperty(const std::string& key, const std::string& value) {
       SetFontWidth(200);
     }
   }
+
+  if (key == "font-feature-settings") {
+    std::vector<std::string> settings;
+    SplitString(value, ',', &settings);
+    for (std::string& setting : settings) {
+      SetFontFeatureSetting(setting);
+    }
+  }
 }
 
 static double clamp(double value, double min, double max) {
@@ -180,5 +193,50 @@ void Style::SetFontWidth(double width) {
   fontWidth_ = clamp(width, 50.0, 200.0);
 }
 
+void Style::SetFontFeature(const std::string& feature, uint32_t value) {
+  std::string trimmed = feature;
+  TrimWhitespace(&trimmed);
+  if (trimmed.length() >= 1 && trimmed.length() <= 4) {
+    fontFeatures_[trimmed] = value;
+  }
+}
+
+void Style::SetFontFeatureSetting(const std::string& setting) {
+  std::vector<std::string> tokens;
+  SplitString(setting, ' ', &tokens);
+  tokens.erase(std::remove_if(tokens.begin(), tokens.end(),
+                              [](const std::string& s){return s.empty();}),
+               tokens.end());
+  std::string feature;
+  if (tokens.size() >= 1) {
+    feature = tokens[0];
+    feature.erase(std::remove_if(feature.begin(), feature.end(),
+                                 [](char c){return c == '\'' || c == '\"';}),
+                  feature.end());
+  }
+
+  if (feature == "inherit") {
+    return;
+  } else if (feature == "initial" || feature == "unset") {
+    fontFeatures_.clear();
+    return;
+  }
+
+  uint32_t featureValue = 1;  // default to "on"
+  if (tokens.size() >= 2) {
+    std::string valueToken = tokens[1];
+    if (valueToken == "on") {
+      featureValue = 1;
+    } else if (valueToken == "off") {
+      featureValue = 0;
+    } else {
+      featureValue = static_cast<uint32_t>(std::atol(valueToken.c_str()));
+    }
+  }
+
+  if (feature.size() >=1 && feature.size() <= 4) {
+    SetFontFeature(feature, featureValue);
+  }
+}
 
 }  // namespace fontdiff

@@ -17,12 +17,16 @@
 #ifndef FONTDIFF_STYLE_H_
 #define FONTDIFF_STYLE_H_
 
+#include <cstdint>
+#include <map>
 #include <string>
 
 namespace fontdiff {
 
 class Font;
 class Language;
+
+typedef std::map<std::string, uint32_t> FontFeatures;
 
 class Style {
  public:
@@ -34,17 +38,21 @@ class Style {
   double GetFontWeight() const { return fontWeight_; }
   double GetFontWidth() const { return fontWidth_; }
   double GetFontScore(const Font& font) const;
+  const FontFeatures& GetFontFeatures() const { return fontFeatures_; }
 
  private:
   void SetProperty(const std::string& key, const std::string& value);
   void SetFontSize(double size);
   void SetFontWeight(double weight);
   void SetFontWidth(double width);
+  void SetFontFeature(const std::string& feature, uint32_t value);
+  void SetFontFeatureSetting(const std::string& setting);
 
   const Language* language_;
   double fontSize_;
   double fontWeight_;  // 100.0 .. 1000.0, default 400.0
   double fontWidth_;   // 50.0 .. 200.0, default 100.0
+  FontFeatures fontFeatures_;
 };
 
 }  // namespace fontdiff

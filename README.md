@@ -120,10 +120,7 @@ magnanimous person who loves fontdiff):
 * **Testing.** Currently, the codebase is entirely untested, which makes
   it hard to maintain the code.
 
-* **More constructs from CSS and HTML.** For finding changes in
-  high-quality fonts,
-  [font-feature-settings](https://www.w3.org/TR/css-fonts-3/#font-rend-desc)
-  would be particularly useful.
+* **More constructs from CSS and HTML.**
 
 * **MathML.** With (even limited) support for MathML rendering,
   font designers could use fontdiff to test their mathematical fonts.

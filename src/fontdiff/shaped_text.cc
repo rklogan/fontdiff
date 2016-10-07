@@ -77,7 +77,18 @@ void ShapedText::Shape() {
   ascender_ = extents.ascender;
   descender_ = extents.descender;
 
-  hb_shape(hbFont, hb_buffer_, NULL, 0);
+  std::vector<hb_feature_t> features;
+  for (auto feature: style_->GetFontFeatures()) {
+    hb_feature_t f;
+    bzero(static_cast<void*>(&f), sizeof(f));
+    f.tag = hb_tag_from_string(feature.first.c_str(), feature.first.size());
+    f.value = feature.second;
+    f.start = 0;
+    f.end = -1;
+    features.push_back(f);
+  }
+
+  hb_shape(hbFont, hb_buffer_, &features.front(), features.size());
 }
 
 FT_F26Dot6 ShapedText::GetXAdvance(int32_t start, int32_t limit) const {
