@@ -169,6 +169,30 @@ void Style::SetProperty(const std::string& key, const std::string& value) {
       SetFontFeatureSetting(setting);
     }
   }
+
+  // https://www.w3.org/TR/css-fonts-3/#propdef-font-variant-caps
+  if (key == "font-variant-caps") {
+    if (value == "normal") {
+      SetFontFeature("c2pc", 0);
+      SetFontFeature("c2sc", 0);
+      SetFontFeature("pcap", 0);
+      SetFontFeature("smcp", 0);
+      SetFontFeature("titl", 0);
+      SetFontFeature("unic", 0);
+    } else if (value == "small-caps") {
+      SetFontFeature("smcp", 1);
+    } else if (value == "all-small-caps") {
+      SetFontFeature("c2sc", 1);
+      SetFontFeature("smcp", 1);
+    } else if (value == "all-petite-caps") {
+      SetFontFeature("c2pc", 1);
+      SetFontFeature("pcap", 1);
+    } if (value == "unicase") {
+      SetFontFeature("unic", 1);
+    } if (value == "titling-caps") {
+      SetFontFeature("titl", 1);
+    }
+  }
 }
 
 static double clamp(double value, double min, double max) {
