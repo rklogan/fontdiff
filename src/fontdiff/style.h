@@ -47,6 +47,7 @@ class Style {
   void SetFontWidth(double width);
   void SetFontFeature(const std::string& feature, uint32_t value);
   void SetFontFeatureSetting(const std::string& setting);
+  void SetFontVariantNumeric(const std::string& value);
 
   const Language* language_;
   double fontSize_;

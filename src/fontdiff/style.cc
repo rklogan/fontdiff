@@ -193,6 +193,51 @@ void Style::SetProperty(const std::string& key, const std::string& value) {
       SetFontFeature("titl", 1);
     }
   }
+
+  // https://www.w3.org/TR/css-fonts-3/#propdef-font-variant-numeric
+  if (key == "font-variant-numeric") {
+    SetFontVariantNumeric(value);
+  }
+}
+
+// https://www.w3.org/TR/css-fonts-3/#propdef-font-variant-numeric
+void Style::SetFontVariantNumeric(const std::string& value) {
+  std::vector<std::string> items;
+  SplitString(value, ' ', &items);
+  for (const std::string val : items) {
+    if (val == "normal") {
+      SetFontFeature("lnum", 0);
+      SetFontFeature("onum", 0);
+      SetFontFeature("pnum", 0);
+      SetFontFeature("tnum", 0);
+      SetFontFeature("frac", 0);
+      SetFontFeature("afrc", 0);
+      SetFontFeature("ordn", 0);
+      SetFontFeature("zero", 0);
+    } else if (val == "lining-nums") {
+      SetFontFeature("lnum", 1);
+      SetFontFeature("onum", 0);
+    } else if (val == "oldstyle-nums") {
+      SetFontFeature("lnum", 0);
+      SetFontFeature("onum", 1);
+    } else if (val == "proportional-nums") {
+      SetFontFeature("pnum", 1);
+      SetFontFeature("tnum", 0);
+    } else if (val == "tabular-nums") {
+      SetFontFeature("pnum", 0);
+      SetFontFeature("tnum", 1);
+    } else if (val == "diagonal-fractions") {
+      SetFontFeature("frac", 1);
+      SetFontFeature("afrc", 0);
+    } else if (val == "stacked-fractions") {
+      SetFontFeature("frac", 0);
+      SetFontFeature("afrc", 1);
+    } else if (val == "ordinal") {
+      SetFontFeature("ordn", 1);
+    } else if (val == "slashed-zero") {
+      SetFontFeature("zero", 1);
+    }
+  }
 }
 
 static double clamp(double value, double min, double max) {
