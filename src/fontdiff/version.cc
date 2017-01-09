@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <string>
+#include <string.h>
 #include "fontdiff/version.h"
 
 namespace fontdiff {
