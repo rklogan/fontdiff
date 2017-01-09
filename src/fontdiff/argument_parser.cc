@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "fontdiff/argument_parser.h"
+#include "fontdiff/version.h"
 
 namespace fontdiff {
 
@@ -66,18 +67,12 @@ ArgumentParser::~ArgumentParser() {
 }
 
 void ArgumentParser::ShowVersionAndExit() {
-#ifndef FONTDIFF_VERSION
-#define FONTDIFF_VERSION 0
-#endif
-#define VERSION_str(s) #s
-#define VERSION_xstr(s) VERSION_str(s)
-
-  const char* version = VERSION_xstr(FONTDIFF_VERSION);
-
-  if (!version || *version == '\0' || !strcmp(version, "0")) {
+  std::string version = GetVersion();
+  if (version.empty()) {
     version = "(unreleased development version)";
   }
-  printf("fontdiff %s\n", version);
+
+  printf("fontdiff %s\n", version.c_str());
   exit(0);
 }
 

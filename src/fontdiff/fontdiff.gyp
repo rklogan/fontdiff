@@ -53,6 +53,7 @@
                 'sha1.cc',
                 'shaped_text.cc',
                 'style.cc',
+		'version.cc',
             ],
             'direct_dependent_settings': {
                 'include_dirs': [

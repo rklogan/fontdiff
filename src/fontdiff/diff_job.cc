@@ -30,6 +30,7 @@
 #include "fontdiff/page.h"
 #include "fontdiff/paragraph.h"
 #include "fontdiff/style.h"
+#include "fontdiff/version.h"
 
 
 namespace fontdiff {
@@ -65,11 +66,20 @@ DiffJob::~DiffJob() {
 }
 
 void DiffJob::WritePDF(const std::string& filepath) {
+
   cairo_surface_t* pdf_surface =
       cairo_pdf_surface_create(filepath.c_str(),
                                pageWidth / 64.0, pageHeight / 64.0);
+
+  std::string version = GetVersion();
+  std::string creator = "fontdiff";
+  if (!version.empty()) {
+    creator.append(" ");
+    creator.append(version);
+  }
   cairo_pdf_surface_set_metadata(pdf_surface, CAIRO_PDF_METADATA_CREATOR,
-                                 "fontdiff");
+                                 creator.c_str());
+
   cairo_t* pdf = cairo_create(pdf_surface);
   for (const Page* page : pages_) {
     page->Render(pdf);
