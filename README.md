@@ -104,19 +104,6 @@ magnanimous person who loves fontdiff):
   take more than a few hours, since the project already uses
   cross-platform libraries and a cross-platform build system.
 
-* **Highlight deltas within a line.** Currently, the tool
-  highlights lines wherever there’s a difference between the old and
-  new versions of a font. However, the output PDF doesn’t show
-  where exactly the difference is. Highlighting the delta
-  locations inside each line would be quite useful for font designers,
-  since it makes it much easier to spot the change.  To implement
-  this, you could probably run the classical diff algorithm to find
-  additions/removals/changes, but compare vertical 1-pixel columns
-  instead of characters.  There are a couple of free libraries that
-  implement diffing on arbitrary objects, for example
-  [DTL](https://github.com/cubicdaiya/dtl/blob/master/test/Objdifftest.cpp).
-  This task could potentially take a week to implement.
-
 * **Testing.** Currently, the codebase is entirely untested, which makes
   it hard to maintain the code.
 
