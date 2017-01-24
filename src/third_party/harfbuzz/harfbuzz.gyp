@@ -28,6 +28,7 @@
                 'files/src/hb-ot-font.cc',
                 'files/src/hb-ot-layout.cc',
                 'files/src/hb-ot-map.cc',
+                'files/src/hb-ot-var.cc',
                 'files/src/hb-ot-shape-complex-arabic.cc',
                 'files/src/hb-ot-shape-complex-default.cc',
                 'files/src/hb-ot-shape-complex-hangul.cc',
