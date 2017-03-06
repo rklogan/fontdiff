@@ -18,7 +18,7 @@
                 #'files/src/hb-coretext.cc',
                 #'files/src/hb-directwrite.cc',
                 'files/src/hb-face.cc',
-                'files/src/hb-fallback-shape.cc',
+                #'files/src/hb-fallback-shape.cc',
                 'files/src/hb-font.cc',
                 'files/src/hb-ft.cc',
                 #'files/src/hb-glib.cc',
