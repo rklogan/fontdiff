@@ -77,7 +77,7 @@ some limitations:
 ## Building
 
 ```sh
-$ git clone --recursive https://github.com/googlei18n/fontdiff.git
+$ git clone --recursive https://github.com/googlefonts/fontdiff.git
 $ cd fontdiff
 $ ./src/third_party/gyp/gyp -f make --depth . --generator-output build src/fontdiff/fontdiff.gyp
 $ make --directory build
