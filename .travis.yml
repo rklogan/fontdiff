@@ -13,7 +13,8 @@ install:
   - ./src/third_party/gyp/gyp -f make --depth . --generator-output build src/fontdiff/fontdiff.gyp
   - make --directory build
 
-script: true
+script: 
+  - bash ./test_harness.sh
 
 before_deploy:
   - mkdir fontdiff-$TRAVIS_OS_NAME
