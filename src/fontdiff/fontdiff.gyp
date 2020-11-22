@@ -53,7 +53,7 @@
                 'sha1.cc',
                 'shaped_text.cc',
                 'style.cc',
-		'version.cc',
+		        'version.cc',
             ],
             'direct_dependent_settings': {
                 'include_dirs': [
@@ -81,6 +81,17 @@
                     # need C++11 flag to handle auto keyword
                     'cflags': ['-std=c++11'],
                 }],
+            ],
+        },
+        {
+            'target_name': 'test',
+            'type': 'executable',
+            'sources': [
+                '../test/t_main.cc',
+            ],
+            'dependencies': [
+                'fontdiff',
+                'fontdiff_lib',
             ],
         },
     ],
