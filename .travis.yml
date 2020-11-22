@@ -14,7 +14,7 @@ install:
   - make --directory build
 
 script: 
-  - bash ./test_harness.sh
+  - ./build/out/Default/test
 
 before_deploy:
   - mkdir fontdiff-$TRAVIS_OS_NAME
