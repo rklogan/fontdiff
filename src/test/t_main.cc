@@ -1,6 +1,7 @@
 
 #include "t_main.h"
 
+//update for each test added
 #define NUM_TESTS 1
 
 // incomplete test to verify the travis is working
