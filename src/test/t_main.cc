@@ -15,6 +15,7 @@ int main()
 
 
 
+    //new tests go here
 
 
 
@@ -23,8 +24,7 @@ int main()
 
 
 
-
-    printf("\n\n\n%s\n", "TESTS COMPLETED");
+    printf("\n\n%s\n", "TESTS COMPLETED");
     printf("%s%d\n", "Passed: ", NUM_TESTS - failed);
     printf("%s%d\n", "Failed: ", failed);
     printf("%s%d\n", "Tests Run: ", NUM_TESTS);

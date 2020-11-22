@@ -1,14 +1,24 @@
 #include "t_argument_parser.h"
 
 /**
- * Runs all the tests for the argument parser class
+ * Runs all the tests for the argument parser class-23
+ * Covers regression on 107/132 lines = 81%
  * @return 1 if the test failed; 0 otherwise
  */
 int testArgumentParser()
 {
+    printf("Testing Module: argument_parser...\n");
     bool passed = testFullArguments();
-    
-    return !passed ? 1 : 0;
+    passed &= testMultiBefore();
+    passed &= testMultiAfter();
+    passed &= testMultiBeforeMultiAfter();
+
+    if(passed){
+        printf("\t\tTest Passed\n");
+        return 0;
+    }
+    printf("\tTestFailed\n");
+    return 1;
 }
 
 /**
@@ -41,6 +51,117 @@ bool testFullArguments()
     string testOut = string("out.pdf");
     rv &= (testOut.compare(ap.output()) == 0);
     
+    if(!rv)
+        printf("\targument_parser failed a test for the default arguments.\n");
+    return rv;
+}
+
+/**
+ * Subtest for multiple before arguments
+ * @return true if the test was passed; false otherwise
+ */
+bool testMultiBefore()
+{
+    // query to check
+    const char* argv[] = {"build/out/Default/fontdiff",
+                          "--before", "path/to/old/FooFont*.ttf",
+                          "a/b/d.ttf", 
+                          "--after", "path/to/new/FooFont*.ttf",
+                          "--specimen", "src/fontdiff/specimen.html",
+                          "--out", "out.pdf"};
+    fontdiff::ArgumentParser ap = fontdiff::ArgumentParser(10, argv);
+
+    bool rv;
+
+    // check that the before values were parsed correctly
+    // then check each of the other there fields
+    vector<string> before = vector<string>({"path/to/old/FooFont*.ttf", 
+                          "a/b/d.ttf"});
+    rv = compareVectors(ap.beforeFonts(), before);
+
+    vector<string> after = vector<string>({"path/to/new/FooFont*.ttf"});
+    rv &= compareVectors(ap.afterFonts(), after);
+
+    string testSpec = string("src/fontdiff/specimen.html");
+    rv &= (testSpec.compare(ap.specimen()) == 0);
+
+    string testOut = string("out.pdf");
+    rv &= (testOut.compare(ap.output()) == 0);
+    
+    if(!rv)
+        printf("\targument parser failed a test with multiple before arguments.\n");
+    return rv;
+}
+
+/**
+ * Subtest to check multiple after parameters
+ * @return true if the test was passed; false otherwise
+ */
+bool testMultiAfter()
+{
+    // query to check
+    const char* argv[] = {"build/out/Default/fontdiff",
+                          "--before", "path/to/old/FooFont*.ttf",
+                          "--after", "path/to/new/FooFont*.ttf", "dsfg/ytukj/sdf/dfg.ttf",
+                          "--specimen", "src/fontdiff/specimen.html",
+                          "--out", "out.pdf"};
+    fontdiff::ArgumentParser ap = fontdiff::ArgumentParser(10, argv);
+
+    bool rv;
+
+    // check that the before values were parsed correctly
+    // then check each of the other there fields
+    vector<string> before = vector<string>({"path/to/old/FooFont*.ttf"});
+    rv = compareVectors(ap.beforeFonts(), before);
+
+    vector<string> after = vector<string>({"path/to/new/FooFont*.ttf", "dsfg/ytukj/sdf/dfg.ttf"});
+    rv &= compareVectors(ap.afterFonts(), after);
+
+    string testSpec = string("src/fontdiff/specimen.html");
+    rv &= (testSpec.compare(ap.specimen()) == 0);
+
+    string testOut = string("out.pdf");
+    rv &= (testOut.compare(ap.output()) == 0);
+    
+    if(!rv)
+        printf("\targument_parser failed a test for multiple after arguments\n");
+    return rv;
+}
+
+/**
+ * Subtest for multiple before and after arguments
+ * @return true if the test was passed; false otherwise
+ */
+bool testMultiBeforeMultiAfter()
+{
+    // query to check
+    const char* argv[] = {"build/out/Default/fontdiff",
+                          "--before", "path/to/old/FooFont*.ttf",
+                          "a/b/d.ttf", 
+                          "--after", "path/to/new/FooFont*.ttf", "dsfg/ytukj/sdf/dfg.ttf",
+                          "--specimen", "src/fontdiff/specimen.html",
+                          "--out", "out.pdf"};
+    fontdiff::ArgumentParser ap = fontdiff::ArgumentParser(11, argv);
+
+    bool rv;
+
+    // check that the before values were parsed correctly
+    // then check each of the other there fields
+    vector<string> before = vector<string>({"path/to/old/FooFont*.ttf", 
+                          "a/b/d.ttf"});
+    rv = compareVectors(ap.beforeFonts(), before);
+
+    vector<string> after = vector<string>({"path/to/new/FooFont*.ttf", "dsfg/ytukj/sdf/dfg.ttf"});
+    rv &= compareVectors(ap.afterFonts(), after);
+
+    string testSpec = string("src/fontdiff/specimen.html");
+    rv &= (testSpec.compare(ap.specimen()) == 0);
+
+    string testOut = string("out.pdf");
+    rv &= (testOut.compare(ap.output()) == 0);
+    
+    if(!rv)
+        printf("\targument parser failed a test with multiple before and after arguments.\n");
     return rv;
 }
 
@@ -62,6 +183,3 @@ bool compareVectors(vector<string> v1, vector<string> v2)
     }
     return true;
 }
-
-
-
