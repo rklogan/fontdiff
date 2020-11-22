@@ -25,11 +25,11 @@
    ```c++
    #include "t_<module_to_test>.cc"
 4. Update The test suite
-   1. Add the number of tests you are adding to the value stored on line 5.
+   1. Add the number of tests you are adding to the value stored on line 5. 
+   For instance, if this was 1 and I'm adding 4 tests, I should change this to be 5.
    ```c++
    #define NUM_TESTS 1
    ```
-   For instance, if this was 1 and I'm adding 4 tests, I should change this to be 5.
    2. For each test you add a line:
    ```c++
    failed += nameOfTest();
