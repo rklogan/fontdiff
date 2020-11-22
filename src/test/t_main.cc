@@ -1,6 +1,8 @@
 
 #include "t_main.h"
 
+#define NUM_TESTS 1
+
 // incomplete test to verify the travis is working
 int main()
 {   
@@ -20,11 +22,10 @@ int main()
 
 
 
-    const unsigned int num_tests = 1;
 
     printf("\n\n\n%s\n", "TESTS COMPLETED");
-    printf("%s%d\n", "Passed: ", num_tests - failed);
+    printf("%s%d\n", "Passed: ", NUM_TESTS - failed);
     printf("%s%d\n", "Failed: ", failed);
-    printf("%s%d\n", "Tests Run: ", num_tests);
+    printf("%s%d\n", "Tests Run: ", NUM_TESTS);
     assert(failed == 0);
 }
