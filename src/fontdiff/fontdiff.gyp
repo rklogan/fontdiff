@@ -89,11 +89,28 @@
             'sources': [
                 '../test/t_main.cc',
             ],
+            'direct_dependent_settings': {
+                'include_dirs': [
+                    '..',
+                ],
+            },
+            'include_dirs': [
+                '..',
+            ],
             'dependencies': [
                 'fontdiff',
                 'fontdiff_lib',
                 '../third_party/freetype/freetype.gyp:freetype',
                 '../third_party/icu/icu.gyp:icu_uc',
+            ],
+            'conditions': [
+                ['OS == "linux"', {
+                    # need C++11 flag for unique_ptr
+                    'cflags': ['-std=c++11'],
+                    'link_settings': {
+                        'libraries': ['-ldl'],
+                    },
+                }],
             ],
         },
     ],
