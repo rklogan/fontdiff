@@ -7,17 +7,17 @@
  */
 int testArgumentParser()
 {
-    printf("Testing Module: argument_parser...\n");
+    cout << "Testing Module: argument_parser..." << endl;
     bool passed = testFullArguments();
     passed &= testMultiBefore();
     passed &= testMultiAfter();
     passed &= testMultiBeforeMultiAfter();
 
     if(passed){
-        printf("\t\tTest Passed\n");
+        cout << "\t\tTest Passed" << endl;
         return 0;
     }
-    printf("\tTestFailed\n");
+    cout << "\t\tTest Failed" << endl;
     return 1;
 }
 
@@ -52,7 +52,7 @@ bool testFullArguments()
     rv &= (testOut.compare(ap.output()) == 0);
     
     if(!rv)
-        printf("\targument_parser failed a test for the default arguments.\n");
+        cout << "\targument_parser failed a test for the default arguments." << endl;
     return rv;
 }
 
@@ -89,7 +89,7 @@ bool testMultiBefore()
     rv &= (testOut.compare(ap.output()) == 0);
     
     if(!rv)
-        printf("\targument parser failed a test with multiple before arguments.\n");
+        cout << "\t argument_parser failed a test with multiple before arguments" << endl;
     return rv;
 }
 
@@ -124,7 +124,7 @@ bool testMultiAfter()
     rv &= (testOut.compare(ap.output()) == 0);
     
     if(!rv)
-        printf("\targument_parser failed a test for multiple after arguments\n");
+        cout << "\t argument_parser failed a test for multiple after arguments" << endl;
     return rv;
 }
 
@@ -161,7 +161,7 @@ bool testMultiBeforeMultiAfter()
     rv &= (testOut.compare(ap.output()) == 0);
     
     if(!rv)
-        printf("\targument parser failed a test with multiple before and after arguments.\n");
+        cout << "\targument_parser failed a test with multiple before and after arguments" << endl;
     return rv;
 }
 
