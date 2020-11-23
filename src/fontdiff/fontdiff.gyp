@@ -92,6 +92,8 @@
             'dependencies': [
                 'fontdiff',
                 'fontdiff_lib',
+                '../third_party/freetype/freetype.gyp:freetype',
+                '../third_party/icu/icu.gyp:icu_uc',
             ],
         },
     ],
