@@ -1,7 +1,7 @@
 #include "t_argument_parser.h"
 
 /**
- * Runs all the tests for the argument parser class-23
+ * Runs all the tests for the argument parser class
  * Covers regression on 107/132 lines = 81%
  * @return 1 if the test failed; 0 otherwise
  */
