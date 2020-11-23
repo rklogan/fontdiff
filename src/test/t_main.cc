@@ -2,7 +2,7 @@
 #include "t_main.h"
 
 //update for each test added
-#define NUM_TESTS 1
+#define NUM_TESTS 2
 
 // incomplete test to verify the travis is working
 int main()
@@ -11,7 +11,7 @@ int main()
     
     unsigned int failed = 0;
     failed += testArgumentParser();
-
+    failed += testFont();
 
 
 
