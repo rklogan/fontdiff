@@ -51,6 +51,7 @@ make --directory build
 ```
 
 ## Notes
-fontdiff's directory structure relies on gyp to link things correctly. If you try to compile a test that includes modules from fontdiff directly it will likely fail; the include statements in fontdiff make many assumptions about where the CWD and many other files are.
+1. fontdiff's directory structure relies on gyp to link things correctly. If you try to compile a test that includes modules from fontdiff directly it will likely fail; the include statements in fontdiff make many assumptions about where the CWD and many other files are.
+2. Many of the dependencies are linked using the build tool, gyp. This can result in code editors/IDEs highlighting #include statements as being erroneous. You can either ignore the red squiggles, and build as denoted above, or setup your editor/IDE to integrate gyp. I have not tried the latter, but it should be possible.
 
    
