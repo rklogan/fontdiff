@@ -12,6 +12,8 @@ if __name__ == "__main__":
     #     }
     # }
     coverage_stats = {}
+
+    # Load the names of all source files
     for filename in os.listdir(os.path.join(os.pardir, 'fontdiff')):
         if filename.endswith('.cc') or filename.endswith('h'):
             coverage_stats[filename] = {
@@ -20,16 +22,17 @@ if __name__ == "__main__":
                 'reported_percent': 0
             }
 
-
+    # read data from the log
     with open(os.path.join(os.pardir, os.pardir, 'coverage', 'coverage.log'), 'r') as log:
         while True:
             file_info = log.readline()
             file_data = log.readline()
             if not file_data or not file_info: break    #EOF
 
-            # some files cannot be analyzed; skip
+            # some files cannot be analyzed/were not executed; skip them
             if file_data.startswith('No'): continue
 
+            # parse the strings
             filename = file_info.split('/')[-1][0:-2]
             
             tmp = file_data.split(':')[1].split()
@@ -41,6 +44,7 @@ if __name__ == "__main__":
                 coverage_stats[filename]['lines_total'] = lines
                 coverage_stats[filename]['lines_executed'] = int(pct * lines / 100)
 
+    # accumulate the stats for the overall project
     overall_stats = {'lines_executed': 0,
                      'lines_total': 0 }
 
@@ -49,10 +53,10 @@ if __name__ == "__main__":
             if k == 'reported_percent': continue
             overall_stats[k] += v
 
-    
-
+    # write the json file
     with open(os.path.join(os.pardir, os.pardir, 'coverage_report.json'), 'w') as report:
         report.write('{\n')
+        # section for overall stats
         report.write('\t"GLOBAL": {\n')
         report.write('\t\t"percent_coverage": '
                 + str(overall_stats['lines_executed'] / float(overall_stats['lines_total']) * 100)
@@ -62,7 +66,8 @@ if __name__ == "__main__":
         report.write('\t},\n')
 
         report.write('\t"FILES:" {\n')
-
+        
+        # write each file's data
         for filename, data in coverage_stats.items():
             report.write('\t\t"' + filename + '": {\n')
 
