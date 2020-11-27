@@ -11,33 +11,20 @@
    ```c++
    using namespace std;
    ```
-   5. Write templates for all the functions that will be written (you can add to these later, as needed)
 2. Create you source code
    1. Name: ```./src/test/t_<module_to_test>.cc```
    2. Include your header:
    ```c++
    #include "t_<module_to_test>.h"
    ```
-   3. Implement your tests in this file
-      * To keep things simple have your tests return 0 if they passed, 1 if they failed.
+   3. Implement your tests in this file. See documetation for `catch` for details.
 3. Add your tests the the test suite header ```./src/test/t_main.h```
    * See the comment in the code for there to put the following line:
    ```c++
    #include "t_<module_to_test>.cc"
-4. Update The test suite
-   1. Add the number of tests you are adding to the value stored on line 5. 
-   For instance, if this was 1 and I'm adding 4 tests, I should change this to be 5.
-   ```c++
-   #define NUM_TESTS 1
-   ```
-   2. For each test you add a line:
-   ```c++
-   failed += nameOfTest();
-   ```
-   where indicated in the comments (~line 13).
 
 ## Development
-1. Generate build instructions (only needed when files are added):
+1. Generate build instructions (only needed first time or if drastic changes are implemented):
 ```bash
 ./src/third_party/gyp/gyp -f make --depth . --generator-output build src/fontdiff/fontdiff.gyp
 ```
@@ -53,7 +40,7 @@ make --directory build
 ## Building for Measuring Test Coverage
 1. Configure the test coverage build
 ```bash
-./src/third_party/gyp/gyp -f make --depth . --generator-output coverage src/test/test_coverage/gyp
+./src/third_party/gyp/gyp -f make --depth . --generator-output coverage src/test/test_coverage.gyp
 ```
 2. Make the test coverage build
 ```bash
