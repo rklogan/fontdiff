@@ -1,4 +1,5 @@
 import os
+import sys
 
 if __name__ == "__main__":
     # Structure of data in coverage_stats
@@ -54,7 +55,8 @@ if __name__ == "__main__":
             overall_stats[k] += v
 
     # write the json file
-    with open(os.path.join(os.pardir, os.pardir, 'coverage_report.json'), 'w') as report:
+    output = 'coverage_report.json' if len(sys.argv) == 1 else sys.argv[1]
+    with open(os.path.join(os.pardir, os.pardir, output), 'w') as report:
         report.write('{\n')
         # section for overall stats
         report.write('\t"GLOBAL": {\n')
