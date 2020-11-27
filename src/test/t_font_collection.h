@@ -6,7 +6,3 @@
 #include "../fontdiff/style.h"
 using namespace std;
 
-int testFontCollection();
-bool testEmptyCollection();
-bool testSingleItemCollection();
-bool testMultiItemCollection();
