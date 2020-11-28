@@ -17,6 +17,3 @@ WORKDIR /fontdiff
 # Build the project
 RUN ./src/third_party/gyp/gyp -f make --depth . --generator-output build src/fontdiff/fontdiff.gyp
 RUN make --directory build
-
-# CMD ./src/test/generate_coverage_report.py
-CMD /fontdiff/src/docker_run_scripts/production

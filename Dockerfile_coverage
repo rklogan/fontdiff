@@ -18,5 +18,4 @@ WORKDIR /fontdiff
 RUN ./src/third_party/gyp/gyp -f make --depth . --generator-output coverage src/test/test_coverage.gyp
 RUN make --directory coverage
 
-# CMD ./src/test/generate_coverage_report.py
 CMD /fontdiff/src/docker_run_scripts/coverage_experiment
