@@ -1,0 +1,22 @@
+FROM ubuntu:latest AS base
+
+# Install dependencies
+RUN apt-get update
+RUN apt-get -y install g++
+RUN apt-get -y install python
+RUN apt-get -y install clang
+RUN apt-get -y install cmake
+RUN apt-get -y install libexpat1-dev
+RUN apt-get -y install libz-dev
+
+FROM base as coverage
+
+COPY ./src ./fontdiff/src
+WORKDIR /fontdiff
+
+# Build the project
+RUN ./src/third_party/gyp/gyp -f make --depth . --generator-output build src/fontdiff/fontdiff.gyp
+RUN make --directory build
+
+# CMD ./src/test/generate_coverage_report.py
+CMD /fontdiff/src/docker_run_scripts/production
