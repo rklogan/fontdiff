@@ -19,4 +19,4 @@ RUN ./src/third_party/gyp/gyp -f make --depth . --generator-output coverage src/
 RUN make --directory coverage
 
 # CMD ./src/test/generate_coverage_report.py
-CMD /fontdiff/src/coverage_experiment/coverage_experiment
+CMD /fontdiff/src/docker_run_scripts/coverage_experiment
