@@ -1,4 +1,5 @@
 import os
+import sys
 
 if __name__ == "__main__":
     # Structure of data in coverage_stats
@@ -54,7 +55,8 @@ if __name__ == "__main__":
             overall_stats[k] += v
 
     # write the json file
-    with open(os.path.join(os.pardir, os.pardir, 'coverage_report.json'), 'w') as report:
+    output = 'coverage_report.json' if len(sys.argv) == 1 else sys.argv[1] + '.json'
+    with open(os.path.join(os.pardir, os.pardir, output), 'w') as report:
         report.write('{\n')
         # section for overall stats
         report.write('\t"GLOBAL": {\n')
@@ -64,6 +66,11 @@ if __name__ == "__main__":
         report.write('\t\t"lines_executed": ' + str(overall_stats['lines_executed']) + ',\n')
         report.write('\t\t"total_lines": ' + str(overall_stats['lines_total']) + ',\n')
         report.write('\t},\n')
+
+        print(output)
+        print('Percent Covered:\t' + str(overall_stats['lines_executed'] / float(overall_stats['lines_total']) * 100) + '%')
+        print('Lines Executed:\t\t' + str(overall_stats['lines_executed']))
+        print('Total Lines:\t\t' + str(overall_stats['lines_total']))
 
         report.write('\t"FILES:" {\n')
         

@@ -1,0 +1,23 @@
+echo Running Test Suite...
+./coverage/out/Default/test_coverage
+cd ./coverage
+gcov -n ./out/Default/obj.target/fontdiff_lib_coverage/src/fontdiff/*.o >> coverage.log
+
+echo
+echo Generating Coverage Report...
+cd ../src/test/
+python generate_coverage_report.py
+
+cd ..
+cd ..
+
+echo
+echo Would you like to see the detailed report [yes/no]?
+read response
+if [ "$response" = "yes" ]; then
+    echo $PWD
+    more coverage_report.json
+fi
+
+echo The report is stored in the Docker container at '/fontdiff/coverage_report.json'
+echo It can be retrieved with 'docker cp container_name:/fontdiff/coverage_report.json' dest_path
