@@ -54,6 +54,7 @@ docker cp <container_name>:/fontdiff/coverage_report.json <host_destination>
 ## Building the Docker Images
 The dockerfiles are provided at the root of the repository as `Dockerfile_production` and `Dockerfile_coverage`. The former can be used to run the core fontdiff software in a container. The latter can be used to run the test coverage experiment. We recommend using the provided images from dockerhub as building these images can more than fifteen minutes. The images can be built using either of the following:
 ```bash
+git clone --recursive https://github.com/rklogan/fontdiff
 docker build -f Dockerfile_production --tag rklogan/ecse437-fontdiff:production .
 docker build -f Dockerfile_coverage --tag rklogan/ecse437-fontdiff:coverage .
 ```
@@ -72,7 +73,7 @@ Usage is the same as was outlined in the previous sections.
     * libexpat1-dev
     * libz-dev
     
-    On linux, these can all be fetched an install with apt-get.
+    On linux, these can all be fetched an installed with apt-get.
 </details>
 
 The following recipe can be followed to build the project from scratch:
