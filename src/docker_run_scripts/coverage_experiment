@@ -20,4 +20,4 @@ if [ "$response" = "yes" ]; then
 fi
 
 echo The report is stored in the Docker container at '/fontdiff/coverage_report.json'
-echo It can be retrieved with 'docker cp <container_name>:/fontdiff/coverage_report.json' <dest_path>
+echo It can be retrieved with 'docker cp container_name:/fontdiff/coverage_report.json' dest_path
