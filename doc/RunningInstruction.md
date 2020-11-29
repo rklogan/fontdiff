@@ -10,7 +10,7 @@ The image can be pulled from dockerhub using:
 ```bash
 docker pull rklogan/ecse437-fontdiff:production
 ```
-fondiff can then be run with it's default parameters using:
+fontdiff can then be run with it's default parameters using:
 ```bash
 docker run -it rklogan/ecse437-fontdiff:production
 ./build/out/Default/fontdiff --before ./src/assets/fonts/OpenSans-Bold.ttf --after ./src/assets/fonts/OpenSans-Italic.ttf --specimen ./src/fontdiff/specimen.html --out out.pdf
