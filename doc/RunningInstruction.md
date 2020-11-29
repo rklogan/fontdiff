@@ -19,7 +19,7 @@ The output pdf can then be retrieved by running the following on the host machin
 ```bash
 docker cp <container_name>:/fontdiff/out.pdf <host_destination>
 ```
-In addition the test suite can be run in the docker container using:
+In addition the test suite can be run in the docker container using the following on the host:
 ```bash
 ./build/out/Default/test
 ```
